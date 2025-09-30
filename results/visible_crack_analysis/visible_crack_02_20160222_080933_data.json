@@ -1,0 +1,58 @@
+{
+  "image_info": {
+    "filename": "20160222_080933",
+    "image_path": "data\\external\\CRACK500\\images\\20160222_080933.jpg",
+    "mask_path": "data\\external\\CRACK500\\masks\\20160222_080933_mask.png"
+  },
+  "cnn_prediction": {
+    "probability": 1.7962263882509433e-05,
+    "classification": "no_crack"
+  },
+  "morphological_analysis": {
+    "contours_detected": 22,
+    "method": "Multi-Canny + Enhanced Morphology"
+  },
+  "orientation_analysis": {
+    "average_angle": 106.44884222204035,
+    "type": "Vertical",
+    "angles": [
+      174.34364318847656,
+      85.41825103759766,
+      155.39364624023438,
+      18.738168716430664,
+      18.724903106689453,
+      175.92318725585938,
+      164.8832244873047,
+      11.709604263305664,
+      80.8800048828125,
+      121.36382293701172,
+      48.70920944213867,
+      125.7215576171875,
+      179.7791290283203,
+      167.75088500976562,
+      143.56716918945312,
+      118.09127044677734,
+      142.94882202148438,
+      74.62117767333984,
+      104.75749206542969,
+      21.645526885986328,
+      27.48130226135254,
+      179.4225311279297
+    ],
+    "count": 22
+  },
+  "ground_truth_metrics": {
+    "crack_pixel_count": 59442,
+    "total_pixels": 3686400,
+    "density_percentage": 1.6124674479166667,
+    "average_width_pixels": 9.103150365563216,
+    "mask_contours_found": 1,
+    "detected_contours": 22
+  },
+  "severity_classification": {
+    "level": "critica",
+    "color": "darkred",
+    "description": "Fisura crítica"
+  },
+  "analysis_timestamp": "2025-09-26T12:06:50.286568"
+}

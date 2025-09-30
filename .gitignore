@@ -1,0 +1,71 @@
+# =============================================================================
+# DATASETS GRANDES (NO SUBIR - DEMASIADO PESADOS)
+# =============================================================================
+# Dataset principal SDNET2018 (~12GB) y CRACK500 (~2GB)
+data/raw/
+data/external/CRACK500/images/
+data/external/CRACK500/masks/
+data/processed/sdnet2018_prepared/
+data/processed/sdnet2018_unified/
+data/processed/unified_dataset/
+dataset/SDNET2018/
+
+# =============================================================================
+# MANTENER RESULTADOS IMPORTANTES PARA EL DOCENTE
+# =============================================================================
+# ✅ MANTENER: Modelos entrenados (para evaluación)
+# models/
+
+# ✅ MANTENER: Resultados técnicos y visualizaciones
+# results/
+
+# ✅ MANTENER: Imágenes de muestra procesadas
+# data/processed/sdnet2018_properties.png
+# data/processed/sdnet2018_samples.png
+
+# Cache de Kaggle
+.kaggle/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Archivos temporales
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Entorno virtual
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints/
+
+# ✅ MANTENER: Resultados importantes para evaluación del docente
+# results/ - INCLUIR TODO (visualizaciones técnicas importantes)
+
+# Logs
+*.log
+logs/
+
+# Sistema
+.env
+.vscode/
+.idea/
+
+# Archivos de configuración local
+config.local.py
+settings.local.py
+
+# Archivos grandes de TensorFlow
+*.pb
+saved_model/
+
+# Archivos de backup
+*.bak
+*.backup

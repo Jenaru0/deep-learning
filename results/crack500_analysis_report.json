@@ -1,0 +1,87 @@
+{
+  "analysis_date": "2025-09-26",
+  "crack500_structure": [
+    {
+      "path": ".",
+      "files": [
+        "dataset_summary.json",
+        "images",
+        "masks",
+        "metadata"
+      ],
+      "count": 4
+    },
+    {
+      "path": "images",
+      "files": [
+        "20160222_080850.jpg",
+        "20160222_080850_1281_361.jpg",
+        "20160222_080850_1281_361.png",
+        "20160222_080850_1281_721.jpg",
+        "20160222_080850_1281_721.png"
+      ],
+      "count": 7222
+    },
+    {
+      "path": "masks",
+      "files": [
+        "20160222_080850_mask.png",
+        "20160222_080933_mask.png",
+        "20160222_081011_mask.png",
+        "20160222_081031_mask.png",
+        "20160222_081102_mask.png"
+      ],
+      "count": 494
+    },
+    {
+      "path": "metadata",
+      "files": [
+        "20160222_080850_mask.txt",
+        "20160222_080933_mask.txt",
+        "20160222_081011_mask.txt",
+        "20160222_081031_mask.txt",
+        "20160222_081102_mask.txt"
+      ],
+      "count": 497
+    }
+  ],
+  "image_characteristics": [
+    {
+      "directory": "images",
+      "total_images": 7222,
+      "analyzed": 20,
+      "avg_width": 718.0,
+      "avg_height": 732.0,
+      "min_width": 360,
+      "max_width": 2560,
+      "min_height": 360,
+      "max_height": 2560
+    }
+  ],
+  "sdnet_comparison": {
+    "sdnet_crack": 5939,
+    "sdnet_no_crack": 10499,
+    "sdnet_total": 16438
+  },
+  "integration_plan": {
+    "strategy": "unified_dataset",
+    "steps": [
+      "1. Identificar im\u00e1genes con fisuras en CRACK500",
+      "2. Identificar im\u00e1genes sin fisuras (o crear artificialmente)",
+      "3. Redimensionar todas las im\u00e1genes a 128x128",
+      "4. Crear nuevo dataset unificado balanceado",
+      "5. Re-entrenar modelo con dataset expandido"
+    ],
+    "expected_benefits": [
+      "Mayor cantidad de datos de entrenamiento",
+      "Mejor generalizaci\u00f3n del modelo",
+      "Posible aumento en precisi\u00f3n",
+      "Mayor robustez ante diferentes tipos de fisuras"
+    ],
+    "challenges": [
+      "CRACK500 puede tener solo im\u00e1genes CON fisuras",
+      "Necesidad de balancear el dataset",
+      "Posible sobre-ajuste si no se maneja bien"
+    ]
+  }
+}

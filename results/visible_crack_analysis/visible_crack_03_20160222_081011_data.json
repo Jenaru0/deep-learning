@@ -1,0 +1,37 @@
+{
+  "image_info": {
+    "filename": "20160222_081011",
+    "image_path": "data\\external\\CRACK500\\images\\20160222_081011.jpg",
+    "mask_path": "data\\external\\CRACK500\\masks\\20160222_081011_mask.png"
+  },
+  "cnn_prediction": {
+    "probability": 0.2595886290073395,
+    "classification": "no_crack"
+  },
+  "morphological_analysis": {
+    "contours_detected": 1,
+    "method": "Multi-Canny + Enhanced Morphology"
+  },
+  "orientation_analysis": {
+    "average_angle": 88.69734954833984,
+    "type": "Vertical",
+    "angles": [
+      88.69734954833984
+    ],
+    "count": 1
+  },
+  "ground_truth_metrics": {
+    "crack_pixel_count": 36315,
+    "total_pixels": 3686400,
+    "density_percentage": 0.985107421875,
+    "average_width_pixels": 4.592849627647841,
+    "mask_contours_found": 5,
+    "detected_contours": 1
+  },
+  "severity_classification": {
+    "level": "severa",
+    "color": "red",
+    "description": "Fisura severa"
+  },
+  "analysis_timestamp": "2025-09-26T12:06:53.133624"
+}

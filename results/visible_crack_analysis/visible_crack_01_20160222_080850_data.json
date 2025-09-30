@@ -1,0 +1,38 @@
+{
+  "image_info": {
+    "filename": "20160222_080850",
+    "image_path": "data\\external\\CRACK500\\images\\20160222_080850.jpg",
+    "mask_path": "data\\external\\CRACK500\\masks\\20160222_080850_mask.png"
+  },
+  "cnn_prediction": {
+    "probability": 0.2501966953277588,
+    "classification": "no_crack"
+  },
+  "morphological_analysis": {
+    "contours_detected": 2,
+    "method": "Multi-Canny + Enhanced Morphology"
+  },
+  "orientation_analysis": {
+    "average_angle": 132.9671516418457,
+    "type": "Diagonal",
+    "angles": [
+      88.92952728271484,
+      177.00477600097656
+    ],
+    "count": 2
+  },
+  "ground_truth_metrics": {
+    "crack_pixel_count": 84686,
+    "total_pixels": 3686400,
+    "density_percentage": 2.2972547743055554,
+    "average_width_pixels": 9.065852236053324,
+    "mask_contours_found": 3,
+    "detected_contours": 2
+  },
+  "severity_classification": {
+    "level": "critica",
+    "color": "darkred",
+    "description": "Fisura crítica"
+  },
+  "analysis_timestamp": "2025-09-26T12:06:47.240911"
+}

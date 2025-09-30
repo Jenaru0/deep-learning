@@ -1,0 +1,28 @@
+{
+  "image_info": {
+    "filename": "D_7001-151.jpg"
+  },
+  "original_classifier": {
+    "detection_probability": 0.7188315391540527,
+    "has_crack": false,
+    "severity": "sin_fisura",
+    "severity_info": {
+      "descripcion": "No se detecta fisura",
+      "ancho_min": 0.0,
+      "ancho_max": 0.0,
+      "densidad_max": 0.0,
+      "riesgo": "Ninguno",
+      "accion": "Ninguna acci\u00f3n requerida",
+      "color": "green"
+    },
+    "crack_analysis": null,
+    "method": "cnn_rejected_by_morphology",
+    "note": "CNN detect\u00f3 fisura pero an\u00e1lisis morfol\u00f3gico no la confirma"
+  },
+  "enhanced_detection": {
+    "contours_found": 0,
+    "detection_method": "Multi-Canny + Enhanced Morphology"
+  },
+  "orientation_analysis": null,
+  "advanced_metrics": null
+}
