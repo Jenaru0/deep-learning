@@ -1,0 +1,68 @@
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Datasets originales (NO SUBIR - Son muy pesados)
+datasets/SDNET2018/
+datasets/SDNET2018.zip
+datasets/CRACK500/images/
+datasets/CRACK500/masks/
+
+# Metadata pesados (algunos archivos mask.txt son > 15MB)
+datasets/CRACK500/metadata/*_mask.txt
+
+# Mantener solo archivos de split y summary
+!datasets/CRACK500/metadata/train.txt
+!datasets/CRACK500/metadata/val.txt
+!datasets/CRACK500/metadata/test.txt
+!datasets/CRACK500/dataset_summary.json
+
+# Datos procesados (NO SUBIR - Se generan con scripts)
+datos/procesados/
+
+# Modelos entrenados (NO SUBIR - Son archivos grandes)
+modelos/**/*.h5
+modelos/**/*.keras
+modelos/**/*.pb
+modelos/**/*.weights
+
+# Resultados (imágenes generadas)
+resultados/visualizaciones/*.png
+resultados/visualizaciones/*.jpg
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs de entrenamiento (opcionales - pueden ser grandes)
+logs/
+*.log
+
+# Archivos temporales
+*.tmp
+*.bak
+*~
+
+# Archivos específicos de Windows
+$RECYCLE.BIN/
+*.lnk

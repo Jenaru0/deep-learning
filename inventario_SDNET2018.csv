@@ -1,0 +1,12 @@
+Categoria,Con_Fisura,Sin_Fisura,Total,Porcentaje_Fisuras
+Deck (D),2025,11595,13620,14.87%
+Pavement (P),2608,21726,24334,10.72%
+Wall (W),3851,14287,18138,21.23%
+TOTAL,8484,47608,56092,15.12%
+
+Observaciones:
+- Desbalance severo: Solo 15.12% de imágenes tienen fisuras
+- Categoría Wall tiene mayor proporción de fisuras (21.23%)
+- Pavement tiene menor proporción (10.72%)
+- TOTAL: 56,092 imágenes verificadas
+- Fecha verificación: 7 de octubre 2025

@@ -1,0 +1,41 @@
+{
+    "metadata": {
+        "fecha_procesamiento": "2025-10-07",
+        "semilla_aleatoria": 42,
+        "ratios": {
+            "train": 0.7,
+            "val": 0.15,
+            "test": 0.15
+        }
+    },
+    "splits": {
+        "train": {
+            "cracked": 5937,
+            "uncracked": 33324,
+            "total": 39261,
+            "porcentaje_cracked": 15.12,
+            "porcentaje_del_dataset": 69.99
+        },
+        "val": {
+            "cracked": 1273,
+            "uncracked": 7141,
+            "total": 8414,
+            "porcentaje_cracked": 15.13,
+            "porcentaje_del_dataset": 15.0
+        },
+        "test": {
+            "cracked": 1274,
+            "uncracked": 7143,
+            "total": 8417,
+            "porcentaje_cracked": 15.14,
+            "porcentaje_del_dataset": 15.01
+        }
+    },
+    "resumen": {
+        "total_imagenes": 56092,
+        "total_cracked": 8484,
+        "total_uncracked": 47608,
+        "porcentaje_cracked_global": 15.13,
+        "verificacion_integridad": true
+    }
+}

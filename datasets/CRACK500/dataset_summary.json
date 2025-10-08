@@ -1,0 +1,11 @@
+{
+  "dataset_name": "CRACK500",
+  "source": "Kaggle - pauldavid22/crack50020220509t090436z001",
+  "download_date": "C:\\Users\\jonna\\OneDrive\\Escritorio\\DEEP LEARNING\\crack_detection_project",
+  "organized_path": "data\\external\\CRACK500",
+  "structure": {
+    "images": 7222,
+    "masks": 494,
+    "metadata": 497
+  }
+}

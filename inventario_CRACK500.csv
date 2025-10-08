@@ -1,0 +1,13 @@
+Split,Imagenes_Patches,Mascaras,Porcentaje,Uso
+Train,1896,1896,56.29%,Entrenamiento
+Validation,348,348,10.33%,Ajuste hiperparametros
+Test,1124,1124,33.37%,Evaluacion final
+TOTAL,3368,3368,100.00%,-
+
+Detalles_adicionales:
+- Total imágenes base: ~494 (según máscaras)
+- Total patches generados: 7,222 (con overlapping)
+- Ratio patches/imagen original: ~2.14
+- Formato máscaras: PNG binario (0=fondo, valores>0=fisura)
+- División predefinida en metadata/train.txt, val.txt, test.txt
+- Fecha verificación: 7 de octubre 2025
