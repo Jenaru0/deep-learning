@@ -1,0 +1,54 @@
+{
+    "metadata": {
+        "dataset": "CRACK500",
+        "tarea": "Segmentación de fisuras",
+        "fecha_procesamiento": "2025-10-08",
+        "splits_predefinidos": true,
+        "fuente_splits": "metadata/train.txt, val.txt, test.txt"
+    },
+    "splits": {
+        "train": {
+            "pares_validos": 1896,
+            "imagenes_faltantes": 0,
+            "mascaras_faltantes": 0,
+            "total_esperado": 1896
+        },
+        "val": {
+            "pares_validos": 348,
+            "imagenes_faltantes": 0,
+            "mascaras_faltantes": 0,
+            "total_esperado": 348
+        },
+        "test": {
+            "pares_validos": 1124,
+            "imagenes_faltantes": 0,
+            "mascaras_faltantes": 0,
+            "total_esperado": 1124
+        }
+    },
+    "validacion": {
+        "train": {
+            "integridad": true,
+            "archivos_problematicos": []
+        },
+        "val": {
+            "integridad": true,
+            "archivos_problematicos": []
+        },
+        "test": {
+            "integridad": true,
+            "archivos_problematicos": []
+        }
+    },
+    "resumen": {
+        "total_pares_validos": 3368,
+        "total_imagenes_faltantes": 0,
+        "total_mascaras_faltantes": 0,
+        "integridad_completa": true,
+        "comparacion_inventario": {
+            "esperado_total": 3368,
+            "procesado_total": 3368,
+            "match": true
+        }
+    }
+}

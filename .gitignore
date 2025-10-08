@@ -18,6 +18,7 @@ dist/
 # Datasets originales (NO SUBIR - Son muy pesados)
 datasets/SDNET2018/
 datasets/SDNET2018.zip
+datasets/CRACK500.zip
 datasets/CRACK500/images/
 datasets/CRACK500/masks/
 
@@ -54,8 +55,8 @@ desktop.ini
 *.swp
 *.swo
 
-# Logs de entrenamiento (opcionales - pueden ser grandes)
-logs/
+# Logs de entrenamiento de modelos (NO los logs de documentación)
+resultados/logs/
 *.log
 
 # Archivos temporales

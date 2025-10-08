@@ -241,7 +241,7 @@ def generar_reporte(splits, estadisticas):
     }
     
     # Guardar a archivo JSON
-    archivo_reporte = Path(config.BASE_DIR) / "splits_info.json"
+    archivo_reporte = Path(config.BASE_DIR) / "reportes" / "splits_info.json"
     with open(archivo_reporte, 'w', encoding='utf-8') as f:
         json.dump(reporte, f, indent=4, ensure_ascii=False)
     

@@ -58,7 +58,7 @@ def validar_ratios():
     print("\n📊 Verificando ratios de división...")
     
     import json
-    splits_info = Path(config.BASE_DIR) / "splits_info.json"
+    splits_info = Path(config.BASE_DIR) / "reportes" / "splits_info.json"
     
     with open(splits_info, 'r') as f:
         data = json.load(f)
