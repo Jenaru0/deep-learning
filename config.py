@@ -35,7 +35,10 @@ RUTA_SEGMENTACION = os.path.join(RUTA_PROCESADOS, "segmentacion")
 # Modelos entrenados
 RUTA_MODELOS = os.path.join(BASE_DIR, "modelos")
 RUTA_MODELO_DETECCION = os.path.join(RUTA_MODELOS, "deteccion")
-RUTA_MODELO_SEGMENTACION = os.path.join(RUTA_MODELOS, "segmentacion")
+RUTA_MODELO_SEGMENTACION_DIR = os.path.join(RUTA_MODELOS, "segmentacion")
+
+# Modelo U-Net entrenado (mejor modelo guardado)
+RUTA_MODELO_SEGMENTACION = os.path.join(RUTA_MODELO_SEGMENTACION_DIR, "unet_segmentacion_final.keras")
 
 # Resultados y visualizaciones
 RUTA_RESULTADOS = os.path.join(BASE_DIR, "resultados")

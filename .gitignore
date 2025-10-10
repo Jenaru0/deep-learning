@@ -40,9 +40,22 @@ modelos/**/*.keras
 modelos/**/*.pb
 modelos/**/*.weights
 
-# Resultados (imágenes generadas)
-resultados/visualizaciones/*.png
-resultados/visualizaciones/*.jpg
+# EXCEPCIONES: Permitir modelo final de segmentación
+!modelos/segmentacion/unet_segmentacion_final.keras
+!modelos/segmentacion/*.json
+
+# Excluir checkpoints intermedios y backups
+modelos/segmentacion/best_unet_*.keras
+modelos/segmentacion/backup_old/
+
+# Resultados (imágenes generadas - pueden regenerarse con scripts)
+resultados/visualizaciones/
+resultados/analisis_parametros/
+
+# Scripts temporales de análisis
+analizar_crack500.py
+estimar_vram_unet.py
+monitor_entrenamiento.sh
 
 # Sistema operativo
 .DS_Store

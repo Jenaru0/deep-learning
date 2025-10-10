@@ -1,0 +1,10 @@
+{
+  "test_loss": 0.1737149953842163,
+  "test_accuracy": 0.9066414833068848,
+  "test_iou": 0.588188648223877,
+  "test_dice": 0.7374326586723328,
+  "timestamp": "20251010_051114",
+  "tiempo_entrenamiento_min": 12.22814510265986,
+  "epochs_entrenados": 36,
+  "mejor_val_iou": 0.5879388451576233
+}
