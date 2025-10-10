@@ -90,20 +90,32 @@ def cargar_modelo(ruta_modelo=None):
         # Buscar el mejor modelo en el directorio
         modelos_dir = Path(RUTA_MODELO_DETECCION)
         
-        # Buscar modelos .h5
-        modelos = list(modelos_dir.glob("*.h5"))
+        # Buscar modelos .keras y .h5
+        modelos_keras = list(modelos_dir.glob("*.keras"))
+        modelos_h5 = list(modelos_dir.glob("*.h5"))
+        modelos = modelos_keras + modelos_h5
         
         if not modelos:
-            raise FileNotFoundError(f"No se encontraron modelos en {modelos_dir}")
+            raise FileNotFoundError(f"No se encontraron modelos (.keras o .h5) en {modelos_dir}")
         
-        # Preferir modelo con "best" en el nombre
+        # Preferir modelo final, luego best_stage2, luego cualquier "best"
+        modelo_final = [m for m in modelos if "final" in m.name.lower()]
+        modelo_stage2 = [m for m in modelos if "stage2" in m.name.lower() and "best" in m.name.lower()]
         modelos_best = [m for m in modelos if "best" in m.name.lower()]
         
-        if modelos_best:
+        if modelo_final:
+            ruta_modelo = modelo_final[0]
+            print(f"📌 Usando modelo final: {ruta_modelo.name}")
+        elif modelo_stage2:
+            ruta_modelo = modelo_stage2[0]
+            print(f"📌 Usando mejor modelo Stage 2: {ruta_modelo.name}")
+        elif modelos_best:
             ruta_modelo = modelos_best[0]
+            print(f"📌 Usando mejor modelo: {ruta_modelo.name}")
         else:
             # Tomar el más reciente
             ruta_modelo = max(modelos, key=lambda p: p.stat().st_mtime)
+            print(f"📌 Usando modelo más reciente: {ruta_modelo.name}")
     
     print(f"\n📂 Cargando modelo desde: {ruta_modelo}")
     modelo = load_model(ruta_modelo)

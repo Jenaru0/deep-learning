@@ -1,0 +1,50 @@
+{
+    "fecha_evaluacion": "2025-10-10 03:46:03",
+    "metricas": {
+        "accuracy": 0.9435665914221218,
+        "precision": 0.9406555643669046,
+        "recall": 0.996360072798544,
+        "f1_score": 0.9677068461486165,
+        "specificity": 0.6475667189952904,
+        "roc_auc": 0.9412588121863936,
+        "average_precision": 0.9835500835879176,
+        "confusion_matrix": {
+            "tn": 825,
+            "fp": 449,
+            "fn": 26,
+            "tp": 7117
+        },
+        "classification_report": {
+            "cracked": {
+                "precision": 0.9694477085781433,
+                "recall": 0.6475667189952904,
+                "f1-score": 0.7764705882352941,
+                "support": 1274.0
+            },
+            "uncracked": {
+                "precision": 0.9406555643669046,
+                "recall": 0.996360072798544,
+                "f1-score": 0.9677068461486165,
+                "support": 7143.0
+            },
+            "accuracy": 0.9435665914221218,
+            "macro avg": {
+                "precision": 0.9550516364725239,
+                "recall": 0.8219633958969172,
+                "f1-score": 0.8720887171919554,
+                "support": 8417.0
+            },
+            "weighted avg": {
+                "precision": 0.9450135531663721,
+                "recall": 0.9435665914221218,
+                "f1-score": 0.9387612607165655,
+                "support": 8417.0
+            }
+        },
+        "total_samples": 8417,
+        "class_distribution": {
+            "cracked": 1274,
+            "uncracked": 7143
+        }
+    }
+}
