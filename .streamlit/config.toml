@@ -1,6 +1,3 @@
-[python]
-version = "3.10"
-
 [server]
 maxUploadSize = 10
 enableCORS = false
