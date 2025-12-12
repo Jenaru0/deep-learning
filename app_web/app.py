@@ -500,367 +500,488 @@ def main():
     """Función principal de la aplicación."""
     
     # ========================================================================
-    # SIDEBAR - INFORMACIÓN Y CONFIGURACIÓN
+    # HEADER PRINCIPAL
     # ========================================================================
-    
-    st.sidebar.title("🏗️ Análisis de Fisuras")
-    st.sidebar.markdown("---")
-    
-    # Selector de modo
-    st.sidebar.header("🔧 Modo de Análisis")
-    modo = st.sidebar.radio(
-        "Selecciona el tipo de análisis:",
-        ["🔍 Detección (Clasificación)", "📐 Segmentación (Parámetros)"],
-        help="Detección: Clasifica si hay fisura o no.\nSegmentación: Analiza fisuras y mide parámetros estructurales."
+    st.title("🏗️ Sistema de Análisis de Fisuras en Estructuras")
+    st.markdown(
+        """
+        <div style='background-color: #f0f2f6; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;'>
+        <p style='margin: 0; color: #31333F;'>
+        🤖 <strong>Inteligencia Artificial para Inspección Estructural</strong><br>
+        Análisis automático de fisuras en concreto utilizando Deep Learning
+        </p>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
     
-    # Determinar qué modo está seleccionado
-    modo_deteccion = "Detección" in modo
-    modo_segmentacion = "Segmentación" in modo
+    # ========================================================================
+    # TABS PRINCIPALES (En vez de radio buttons en sidebar)
+    # ========================================================================
+    tab_deteccion, tab_segmentacion, tab_ayuda = st.tabs([
+        "🔍 Detección Rápida", 
+        "📐 Análisis Detallado",
+        "❓ Ayuda"
+    ])
     
-    st.sidebar.markdown("---")
-    st.sidebar.header("ℹ️ Acerca de")
-    
-    if modo_deteccion:
-        st.sidebar.info(
+    # ========================================================================
+    # TAB 1: DETECCIÓN
+    # ========================================================================
+    with tab_deteccion:
+        modo_deteccion = True
+        modo_segmentacion = False
+        
+        # Descripción del modo
+        st.markdown(
             """
-            **Modo: Detección**
-            
-            Utiliza **MobileNetV2** para clasificar imágenes 
-            como "Con Fisura" o "Sin Fisura".
-            
-            **Métricas:**
-            - Precisión: 94.36%
-            - Recall: 99.64%
-            - F1-Score: 96.77%
-            
-            **Dataset:**
-            SDNET2018 (56,092 imágenes)
-            """
+            <div style='background-color: #e8f4f8; padding: 1rem; border-left: 4px solid #1f77b4; border-radius: 0.3rem; margin-bottom: 1.5rem;'>
+            <h4 style='margin-top: 0; color: #1f77b4;'>🔍 Detección Rápida - Clasificación Binaria</h4>
+            <p style='margin-bottom: 0;'>
+            Utiliza <strong>MobileNetV2</strong> entrenado con 56,092 imágenes del dataset SDNET2018.<br>
+            <strong>Precisión:</strong> 94.36% | <strong>Recall:</strong> 99.64% | <strong>F1-Score:</strong> 96.77%
+            </p>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
-    else:
-        st.sidebar.info(
-            """
-            **Modo: Segmentación**
+        
+        # Configuración en columnas compactas
+        col_conf1, col_conf2 = st.columns([3, 1])
+        with col_conf1:
+            uploaded_file_det = st.file_uploader(
+                "📁 Sube una imagen de la estructura",
+                type=['jpg', 'jpeg', 'png'],
+                help="Formatos: JPG, JPEG, PNG | Resolución recomendada: 224x224 o superior",
+                key="upload_deteccion"
+            )
+        with col_conf2:
+            umbral = st.slider(
+                "Umbral",
+                min_value=0.0,
+                max_value=1.0,
+                value=0.5,
+                step=0.05,
+                help="Sensibilidad de detección"
+            )
+        
+        if uploaded_file_det is not None:
+            # Ocultar instrucciones iniciales (UX: reducir ruido visual)
             
-            Utiliza **U-Net Lite** para segmentar fisuras 
-            y medir parámetros estructurales.
+            # Cargar modelo SOLO cuando hay imagen (lazy loading)
+            with st.spinner("⏳ Cargando modelo MobileNetV2..."):
+                modelo_det, nombre_modelo_det = cargar_modelo()
             
-            **Métricas:**
-            - IoU: 60.5%
-            - Dice: 73.0%
-            - Accuracy: 97.4%
-            
-            **Parámetros medidos:**
-            - Ancho de fisura (mm)
-            - Orientación (H/V/D)
-            - Profundidad visual
-            
-            **Dataset:**
-            CRACK500 (3,368 pares)
-            """
-        )
-    
-    st.sidebar.markdown("---")
-    st.sidebar.header("⚙️ Configuración")
-    
-    if modo_deteccion:
-        umbral = st.sidebar.slider(
-            "Umbral de Decisión",
-            min_value=0.0,
-            max_value=1.0,
-            value=0.5,
-            step=0.05,
-            help="Umbral para clasificar como fisura. Valores más bajos detectan más fisuras (más sensible)."
-        )
-    else:
-        opacidad_overlay = st.sidebar.slider(
-            "Opacidad del Overlay",
-            min_value=0.0,
-            max_value=1.0,
-            value=0.5,
-            step=0.05,
-            help="Transparencia de la máscara sobre la imagen original."
-        )
-        umbral = 0.5  # Valor por defecto para segmentación
-    
-    st.sidebar.markdown("---")
-    st.sidebar.header("📊 Estado de Modelos")
-    
-    # Cargar modelo(s)
-    modelo_det, nombre_modelo_det = cargar_modelo()
-    st.sidebar.success(f"✅ Detección: `{nombre_modelo_det}`")
-    
-    if modo_segmentacion:
-        if SEGMENTACION_DISPONIBLE:
-            modelo_seg = cargar_modelo_segmentacion()
-            if modelo_seg:
-                st.sidebar.success("✅ Segmentación: `unet_segmentacion_final.keras`")
-            else:
-                st.sidebar.error("❌ Modelo de segmentación no disponible")
-                st.error("❌ No se pudo cargar el modelo de segmentación. Usa modo Detección.")
+            # Cargar imagen
+            try:
+                imagen_original = Image.open(uploaded_file_det)
+            except Exception as e:
+                st.error(f"❌ Error al cargar la imagen: {e}")
                 return
-        else:
-            st.sidebar.error("❌ Módulo de segmentación no disponible")
-            st.error("❌ El módulo de segmentación no está instalado. Usa modo Detección.")
-            return
-    
-    if modo_deteccion:
-        col1, col2 = st.sidebar.columns(2)
-        col1.metric("Precisión", "94.36%")
-        col2.metric("Recall", "99.64%")
-        
-        col3, col4 = st.sidebar.columns(2)
-        col3.metric("F1-Score", "96.77%")
-        col4.metric("AUC", "94.13%")
-    
-    st.sidebar.markdown("---")
-    st.sidebar.caption("© 2025 - Sistema de Análisis de Fisuras")
-    
-    # ========================================================================
-    # ÁREA PRINCIPAL
-    # ========================================================================
-    
-    if modo_deteccion:
-        st.title("🔍 Sistema de Detección de Fisuras en Estructuras")
-        st.markdown(
-            """
-            Sube una fotografía de una estructura de concreto y el sistema analizará 
-            si presenta **fisuras** o si está en **buen estado**.
-            """
-        )
-    else:
-        st.title("📐 Sistema de Análisis de Parámetros Estructurales")
-        st.markdown(
-            """
-            Sube una fotografía de una fisura y el sistema generará una **segmentación detallada** 
-            con mediciones de **ancho**, **orientación** y **profundidad visual**.
-            """
-        )
-
-    
-    st.markdown("---")
-    
-    # Subida de archivo
-    uploaded_file = st.file_uploader(
-        "📁 Selecciona una imagen",
-        type=['jpg', 'jpeg', 'png'],
-        help="Formatos soportados: JPG, JPEG, PNG"
-    )
-    
-    if uploaded_file is not None:
-        # Cargar imagen
-        try:
-            imagen_original = Image.open(uploaded_file)
-        except Exception as e:
-            st.error(f"❌ Error al cargar la imagen: {e}")
-            return
-        
-        # ========== MODO DETECCIÓN ==========
-        if modo_deteccion:
+            
+            # Progress bar para feedback visual
+            progress_bar = st.progress(0, text="🔄 Procesando imagen...")
+            
             # Layout de dos columnas
-            col_izq, col_der = st.columns(2)
+            col_izq, col_der = st.columns([1, 1])
             
             with col_izq:
-                st.subheader("📷 Imagen Original")
-                st.image(imagen_original, use_container_width=True, caption=f"Tamaño: {imagen_original.size[0]}x{imagen_original.size[1]} px")
+                st.markdown("#### 📷 Imagen Original")
+                st.image(
+                    imagen_original, 
+                    use_container_width=True, 
+                    caption=f"{imagen_original.size[0]}×{imagen_original.size[1]} px"
+                )
+            
+            progress_bar.progress(30, text="🧠 Ejecutando modelo...")
+            
+            # Preprocesar y predecir
+            img_prep = preprocesar_imagen(imagen_original)
+            clase, confianza, prob_cracked = predecir(modelo_det, img_prep, umbral)
+            interpretacion = interpretar_resultado(prob_cracked, umbral)
+            
+            progress_bar.progress(70, text="📊 Generando resultados...")
             
             with col_der:
-                st.subheader("🤖 Análisis del Modelo")
+                st.markdown("#### 🤖 Resultado del Análisis")
                 
-                with st.spinner("Analizando imagen..."):
-                    # Preprocesar
-                    img_prep = preprocesar_imagen(imagen_original)
-                    
-                    # Predecir
-                    clase, confianza, prob_cracked = predecir(modelo_det, img_prep, umbral)
-                    
-                    # Interpretar
-                    interpretacion = interpretar_resultado(prob_cracked, umbral)
-                
-                # Mostrar resultado principal
+                # Card de resultado principal con color dinámico
                 if interpretacion['color'] == 'red':
-                    st.error(f"### {interpretacion['diagnostico']}")
+                    resultado_bg = "#fee"
+                    resultado_border = "#f44"
+                    resultado_icon = "⚠️"
                 else:
-                    st.success(f"### {interpretacion['diagnostico']}")
+                    resultado_bg = "#efe"
+                    resultado_border = "#4a4"
+                    resultado_icon = "✅"
                 
-                st.markdown(f"**Confianza:** {confianza * 100:.2f}%")
-                st.markdown(f"**Nivel de Confianza:** {interpretacion['nivel']}")
+                st.markdown(
+                    f"""
+                    <div style='background-color: {resultado_bg}; padding: 1.5rem; border-left: 5px solid {resultado_border}; border-radius: 0.5rem; margin-bottom: 1rem;'>
+                    <h2 style='margin: 0 0 0.5rem 0; color: {resultado_border};'>{resultado_icon} {interpretacion['diagnostico']}</h2>
+                    <div style='font-size: 1.2rem; margin-bottom: 0.5rem;'>
+                    <strong>Confianza:</strong> <span style='font-size: 1.5rem; font-weight: bold;'>{confianza * 100:.1f}%</span>
+                    </div>
+                    <div style='background-color: white; padding: 0.5rem; border-radius: 0.3rem; margin-top: 0.5rem;'>
+                    <strong>Nivel:</strong> {interpretacion['nivel']}
+                    </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                
+                # Mensaje de interpretación
+                st.info(f"💡 **{interpretacion['mensaje']}**")
+                
+                # Recomendación con color apropiado
+                if interpretacion['color'] == 'red':
+                    st.warning(f"**📋 Recomendación:**\n\n{interpretacion['recomendacion']}")
+                else:
+                    st.success(f"**📋 Recomendación:**\n\n{interpretacion['recomendacion']}")
+            
+            progress_bar.progress(100, text="✅ Análisis completado")
+            # Ocultar progress bar después de completar (UX limpia)
+            import time
+            time.sleep(0.5)
+            progress_bar.empty()
             
             # Gráfico de confianza
             st.markdown("---")
-            st.subheader("📊 Distribución de Probabilidades")
-            
+            st.markdown("#### 📊 Distribución de Probabilidades")
             fig = crear_grafico_confianza(prob_cracked)
             st.pyplot(fig)
             plt.close(fig)
             
-            # Interpretación detallada
+            # Detalles técnicos (colapsados por defecto - UX: mostrar solo lo esencial)
+            with st.expander("🔬 Detalles Técnicos", expanded=False):
+                col_t1, col_t2 = st.columns(2)
+                with col_t1:
+                    st.metric("Probabilidad Fisura", f"{prob_cracked * 100:.2f}%")
+                    st.metric("Umbral Decisión", f"{umbral}")
+                    st.metric("Tamaño Entrada", f"{IMG_SIZE}×{IMG_SIZE} px")
+                with col_t2:
+                    st.metric("Probabilidad Sin Fisura", f"{(1 - prob_cracked) * 100:.2f}%")
+                    st.metric("Modelo", nombre_modelo_det)
+                    st.metric("Resolución Original", f"{imagen_original.size[0]}×{imagen_original.size[1]} px")
+            
+            # Advertencia legal (siempre visible pero discreta)
             st.markdown("---")
-            st.subheader("📋 Interpretación Detallada")
-            
-            col_info1, col_info2 = st.columns(2)
-            
-            with col_info1:
-                st.info(f"**Análisis:**\n\n{interpretacion['mensaje']}")
-            
-            with col_info2:
-                if interpretacion['color'] == 'red':
-                    st.warning(f"**Recomendación:**\n\n{interpretacion['recomendacion']}")
-                else:
-                    st.success(f"**Recomendación:**\n\n{interpretacion['recomendacion']}")
-            
-            # Detalles técnicos (expandible)
-            with st.expander("🔬 Ver Detalles Técnicos"):
-                img_size_display = f"{IMG_SIZE}x{IMG_SIZE}" if isinstance(IMG_SIZE, int) else f"{IMG_SIZE[0]}x{IMG_SIZE[1]}"
-                st.markdown(f"""
-                **Probabilidades:**
-                - Probabilidad de FISURA: {prob_cracked * 100:.4f}%
-                - Probabilidad de SIN FISURA: {(1 - prob_cracked) * 100:.4f}%
-                
-                **Configuración:**
-                - Umbral de decisión: {umbral}
-                - Tamaño de entrada: {img_size_display} px
-                - Modelo: {nombre_modelo_det}
-                
-                **Preprocesamiento:**
-                - Redimensionado: {imagen_original.size} → {img_size_display}
-                - Normalización: [0, 255] → [0, 1]
-                - Modo de color: {imagen_original.mode} → RGB
-                """)
-            
-            # Advertencia legal
-            st.markdown("---")
-            st.warning(
-                """
-                ⚠️ **Nota Importante:** Este sistema es una herramienta de apoyo y no reemplaza 
-                la inspección profesional de un ingeniero estructural certificado. 
-                Siempre consulte con un profesional para decisiones críticas sobre seguridad estructural.
-                """
+            st.caption(
+                "⚠️ **Disclaimer:** Este sistema es una herramienta de apoyo. "
+                "No reemplaza la inspección de un ingeniero estructural certificado."
             )
-
         
-        # ========== MODO SEGMENTACIÓN ==========
         else:
+            # Instrucciones cuando no hay imagen
+            st.markdown("### 👆 Sube una imagen para comenzar")
+            
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.markdown(
+                    """
+                    **📸 Calidad**
+                    - ✓ Buena iluminación
+                    - ✓ Sin sombras fuertes
+                    - ✓ Imagen enfocada
+                    """
+                )
+            with col2:
+                st.markdown(
+                    """
+                    **📏 Encuadre**
+                    - ✓ Toma perpendicular
+                    - ✓ Distancia 0.5-2m
+                    - ✓ Fisura centrada
+                    """
+                )
+            with col3:
+                st.markdown(
+                    """
+                    **✅ Formato**
+                    - ✓ JPG, JPEG, PNG
+                    - ✓ Mín: 224×224 px
+                    - ✓ Máx: 4096×4096 px
+                    """
+                )
+    
+    # ========================================================================
+    # TAB 2: SEGMENTACIÓN
+    # ========================================================================
+    with tab_segmentacion:
+        modo_deteccion = False
+        modo_segmentacion = True
+        
+        # Verificar disponibilidad
+        if not SEGMENTACION_DISPONIBLE:
+        # Verificar disponibilidad
+        if not SEGMENTACION_DISPONIBLE:
+            st.error("❌ **Módulo de segmentación no disponible**")
+            st.info("💡 Usa la pestaña **Detección Rápida** para análisis de fisuras.")
+            return
+        
+        # Descripción del modo
+        st.markdown(
+            """
+            <div style='background-color: #f0e8f4; padding: 1rem; border-left: 4px solid #9b59b6; border-radius: 0.3rem; margin-bottom: 1.5rem;'>
+            <h4 style='margin-top: 0; color: #9b59b6;'>📐 Análisis Detallado - Segmentación Semántica</h4>
+            <p style='margin-bottom: 0;'>
+            Utiliza <strong>U-Net Lite</strong> entrenado con 3,368 pares del dataset CRACK500.<br>
+            <strong>IoU:</strong> 60.5% | <strong>Dice:</strong> 73.0% | <strong>Accuracy:</strong> 97.4%<br>
+            Mide: <strong>Ancho, Orientación, Profundidad Visual</strong>
+            </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        
+        # Configuración
+        col_conf1, col_conf2 = st.columns([3, 1])
+        with col_conf1:
+            uploaded_file_seg = st.file_uploader(
+                "📁 Sube una imagen con fisura visible",
+                type=['jpg', 'jpeg', 'png'],
+                help="Para mejores resultados, captura cercana de la fisura",
+                key="upload_segmentacion"
+            )
+        with col_conf2:
+            opacidad_overlay = st.slider(
+                "Opacidad",
+                min_value=0.0,
+                max_value=1.0,
+                value=0.5,
+                step=0.05,
+                help="Transparencia del overlay"
+            )
+        
+        if uploaded_file_seg is not None:
+            # Cargar modelos
+            with st.spinner("⏳ Cargando modelos..."):
+                modelo_det, _ = cargar_modelo()
+                modelo_seg = cargar_modelo_segmentacion()
+                
+            if modelo_seg is None:
+                st.error("❌ No se pudo cargar el modelo de segmentación")
+                return
+            
+            # Cargar imagen
+            try:
+                imagen_original = Image.open(uploaded_file_seg)
+            except Exception as e:
+                st.error(f"❌ Error al cargar la imagen: {e}")
+                return
+            
+            # Progress tracking
+            progress_bar = st.progress(0, text="🔄 Procesando imagen...")
+            
+            progress_bar.progress(20, text="🧠 Ejecutando segmentación...")
+            
             # Generar segmentación
-            with st.spinner("🔄 Generando segmentación y midiendo parámetros..."):
-                img_np = np.array(imagen_original.convert('RGB'))
-                mascara = modelo_seg.predecir(img_np, umbral=0.5)
-                imagen_overlay = crear_overlay_segmentacion(imagen_original, mascara, opacidad_overlay)
+            img_np = np.array(imagen_original.convert('RGB'))
+            mascara = modelo_seg.predecir(img_np, umbral=0.5)
+            
+            progress_bar.progress(50, text="🎨 Generando visualización...")
+            imagen_overlay = crear_overlay_segmentacion(imagen_original, mascara, opacidad_overlay)
+            
+            progress_bar.progress(70, text="📏 Calculando estadísticas...")
+            
+            # Calcular estadísticas básicas
+            pixels_fisura = np.sum(mascara > 0)
+            pixels_total = mascara.size
+            porcentaje_fisura = (pixels_fisura / pixels_total) * 100
+            
+            progress_bar.progress(100, text="✅ Segmentación completada")
+            import time
+            time.sleep(0.5)
+            progress_bar.empty()
             
             # Layout de dos columnas
-            col_izq, col_der = st.columns(2)
+            col_izq, col_der = st.columns([1, 1])
             
             with col_izq:
-                st.subheader("📷 Imagen Original")
-                st.image(imagen_original, use_container_width=True, 
-                         caption=f"Tamaño: {imagen_original.size[0]}x{imagen_original.size[1]} px")
-                
-                st.subheader("🎨 Segmentación de Fisuras")
-                st.image(imagen_overlay, use_container_width=True, 
-                         caption="Fisuras detectadas en rojo")
-            
-            with col_der:
-                st.subheader("📏 Parámetros Estructurales")
-                
-                # Lazy loading: solo calcular parámetros si usuario lo solicita
-                calcular_params = st.checkbox(
-                    "🔬 Calcular Mediciones Detalladas",
-                    value=True,
-                    help="Desactiva para vista rápida. Activa para medir ancho, orientación y profundidad (10-20s en primera ejecución, luego instantáneo por caché)"
+                st.markdown("#### 📷 Imagen Original")
+                st.image(
+                    imagen_original, 
+                    use_container_width=True,
+                    caption=f"{imagen_original.size[0]}×{imagen_original.size[1]} px"
                 )
                 
-                parametros = None
-                if calcular_params:
-                    parametros = mostrar_parametros_estructurales(mascara, imagen_original)
-                else:
-                    st.info("ℹ️ Marca la casilla para calcular parámetros estructurales detallados")
+                # Estadísticas rápidas
+                st.markdown(
+                    f"""
+                    <div style='background-color: #f8f9fa; padding: 0.8rem; border-radius: 0.3rem; margin-top: 1rem;'>
+                    <strong>📊 Cobertura de Fisura:</strong> {porcentaje_fisura:.2f}%<br>
+                    <strong>🔢 Píxeles Detectados:</strong> {pixels_fisura:,} / {pixels_total:,}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
             
-            # Detalles técnicos de la segmentación
-            st.markdown("---")
-            with st.expander("🔬 Ver Detalles Técnicos de Segmentación"):
-                pixels_fisura = np.sum(mascara > 0)
-                pixels_total = mascara.size
-                porcentaje_fisura = (pixels_fisura / pixels_total) * 100
+            with col_der:
+                st.markdown("#### 🎨 Segmentación")
+                st.image(
+                    imagen_overlay,
+                    use_container_width=True,
+                    caption="Fisuras en rojo"
+                )
                 
-                st.markdown(f"""
-                **Estadísticas de Segmentación:**
-                - Píxeles de fisura detectados: {pixels_fisura:,}
-                - Píxeles totales: {pixels_total:,}
-                - Porcentaje de área con fisura: {porcentaje_fisura:.2f}%
+                # Toggle para cálculos pesados (UX: dar control al usuario)
+                calcular_params = st.toggle(
+                    "🔬 Calcular Parámetros Estructurales",
+                    value=False,
+                    help="Mediciones detalladas (10-20s en primera ejecución, luego instantáneo)"
+                )
+            
+            # Parámetros estructurales (solo si se solicita)
+            if calcular_params:
+                st.markdown("---")
+                st.markdown("### 📏 Parámetros Estructurales Detallados")
                 
-                **Configuración:**
-                - Umbral de segmentación: {umbral}
-                - Opacidad del overlay: {opacidad_overlay}
-                - Modelo: U-Net Lite (1.95M parámetros)
-                - Tamaño de entrada: 128x128 px
-                
-                **Preprocesamiento:**
-                - Redimensionado: {imagen_original.size} → 128x128
-                - Normalización: [0, 255] → [0, 1]
-                - Modo de color: {imagen_original.mode} → RGB
-                """)
+                with st.spinner("⚙️ Calculando mediciones..."):
+                    parametros = mostrar_parametros_estructurales(mascara, imagen_original)
                 
                 if parametros:
-                    st.markdown(f"""
-                    **Parámetros Medidos:**
-                    - Ancho promedio: {parametros.get('ancho_promedio_mm', 0):.2f} mm
-                    - Ancho máximo: {parametros.get('ancho_maximo_mm', 0):.2f} mm
-                    - Área total: {parametros.get('area_total_mm2', 0):.2f} mm²
-                    - Orientación: {parametros.get('orientacion', 'N/A')}
-                    - Profundidad visual: {parametros.get('profundidad_categoria', 'N/A')}
-                    """)
+                    # Resumen en cards
+                    st.markdown("#### 📊 Resumen de Mediciones")
+                    col1, col2, col3, col4 = st.columns(4)
+                    col1.metric("Ancho Promedio", f"{parametros['ancho_promedio_mm']:.2f} mm")
+                    col2.metric("Ancho Máximo", f"{parametros['ancho_maximo_mm']:.2f} mm")
+                    col3.metric("Área Total", f"{parametros['area_total_mm2']:.2f} mm²")
+                    col4.metric("Orientación", parametros['orientacion'])
             
-            # Advertencia legal
+            # Detalles técnicos (colapsados)
+            with st.expander("🔬 Detalles Técnicos de Segmentación", expanded=False):
+                col_t1, col_t2 = st.columns(2)
+                with col_t1:
+                    st.metric("Píxeles de Fisura", f"{pixels_fisura:,}")
+                    st.metric("Porcentaje Área", f"{porcentaje_fisura:.2f}%")
+                    st.metric("Umbral", "0.5")
+                with col_t2:
+                    st.metric("Píxeles Totales", f"{pixels_total:,}")
+                    st.metric("Opacidad Overlay", f"{opacidad_overlay}")
+                    st.metric("Modelo", "U-Net Lite (1.95M)")
+            
             st.markdown("---")
-            st.warning(
+            st.caption(
+                "⚠️ **Disclaimer:** Las mediciones son estimaciones visuales. "
+                "Validar con profesionales e instrumentos calibrados."
+            )
+        
+        else:
+            # Instrucciones
+            st.markdown("### 👆 Sube una imagen para análisis detallado")
+            
+            st.info(
                 """
-                ⚠️ **Nota Importante:** Este sistema es una herramienta de apoyo y no reemplaza 
-                la inspección profesional de un ingeniero estructural certificado. 
-                Las mediciones son estimaciones visuales y deben ser validadas por profesionales.
+                💡 **Consejos para Segmentación:**
+                - Captura cercana de la fisura (distancia 0.3-1m)
+                - Asegura que la fisura sea claramente visible
+                - Evita reflejos y sombras sobre la fisura
+                - Preferible fondo de concreto uniforme
                 """
             )
-
     
-    else:
-        # Mensaje cuando no hay imagen
-        st.info("👆 Por favor, sube una imagen para comenzar el análisis.")
+    # ========================================================================
+    # TAB 3: AYUDA
+    # ========================================================================
+    with tab_ayuda:
+        st.markdown("### 📚 Guía de Uso")
         
-        # Ejemplos de uso
+        # Sección de FAQ
+        st.markdown("#### ❓ Preguntas Frecuentes")
+        
+        with st.expander("¿Cuál es la diferencia entre Detección y Segmentación?"):
+            st.markdown(
+                """
+                **🔍 Detección Rápida:**
+                - Clasifica la imagen completa: "Con Fisura" o "Sin Fisura"
+                - Rápido (1-2 segundos)
+                - Ideal para inspecciones masivas
+                - Precisión: 94.36%
+                
+                **📐 Análisis Detallado:**
+                - Identifica píxel por píxel dónde están las fisuras
+                - Mide ancho, orientación y profundidad
+                - Más lento (10-30 segundos con mediciones)
+                - Ideal para análisis estructural específico
+                """
+            )
+        
+        with st.expander("¿Qué tipo de imágenes funcionan mejor?"):
+            st.markdown(
+                """
+                **✅ Mejores resultados:**
+                - Iluminación natural y uniforme
+                - Toma perpendicular a la superficie
+                - Fisura claramente visible
+                - Fondo de concreto uniforme
+                - Resolución mínima 224×224 px
+                
+                **❌ Evitar:**
+                - Sombras fuertes o reflejos
+                - Ángulos muy oblicuos
+                - Imágenes borrosas o con mucho ruido
+                - Resoluciones muy bajas (<200 px)
+                """
+            )
+        
+        with st.expander("¿Qué significan las métricas del modelo?"):
+            st.markdown(
+                """
+                **Precisión (94.36%):** De todas las predicciones "Con Fisura", el 94.36% son correctas.
+                
+                **Recall (99.64%):** De todas las fisuras reales, el 99.64% son detectadas (muy pocas se pierden).
+                
+                **F1-Score (96.77%):** Balance entre Precisión y Recall.
+                
+                **IoU (60.5%):** Intersection over Union - solapamiento entre fisura predicha y real.
+                """
+            )
+        
+        with st.expander("¿Puedo confiar 100% en los resultados?"):
+            st.markdown(
+                """
+                ⚠️ **No.** Este sistema es una **herramienta de apoyo**, no un reemplazo de ingenieros.
+                
+                **Úsalo para:**
+                - Inspecciones preliminares
+                - Priorizar estructuras que requieren atención
+                - Documentación fotográfica
+                
+                **NO lo uses como:**
+                - Única base para decisiones críticas de seguridad
+                - Reemplazo de inspección profesional
+                - Certificación estructural oficial
+                
+                ✅ **Siempre consulta con un ingeniero estructural certificado.**
+                """
+            )
+        
         st.markdown("---")
-        st.subheader("💡 Consejos para Mejores Resultados")
+        st.markdown("#### 📊 Información Técnica")
         
-        col1, col2, col3 = st.columns(3)
-        
+        col1, col2 = st.columns(2)
         with col1:
             st.markdown(
                 """
-                **📸 Calidad de Imagen**
-                - Usa buena iluminación
-                - Evita sombras fuertes
-                - Enfoca la zona de interés
+                **Modelo de Detección:**
+                - Arquitectura: MobileNetV2
+                - Dataset: SDNET2018 (56,092 imgs)
+                - Entrenamiento: Transfer Learning
+                - Entrada: 224×224 RGB
                 """
             )
-        
         with col2:
             st.markdown(
                 """
-                **📏 Encuadre**
-                - Captura perpendicular
-                - Distancia adecuada (0.5-2m)
-                - Centra la fisura sospechosa
+                **Modelo de Segmentación:**
+                - Arquitectura: U-Net Lite
+                - Dataset: CRACK500 (3,368 pares)
+                - Parámetros: 1.95M
+                - Entrada: 128×128 RGB
                 """
             )
         
-        with col3:
-            st.markdown(
-                """
-                **✅ Formato**
-                - JPG, JPEG o PNG
-                - Resolución mínima: 224x224
-                - Máximo recomendado: 4096x4096
-                """
-            )
+        st.markdown("---")
+        st.caption("© 2025 - Sistema de Análisis de Fisuras | Desarrollado con Streamlit + TensorFlow")
 
 
 # ============================================================================
