@@ -50,21 +50,8 @@ try:
     if not modelo_det_existe or not modelo_seg_existe:
         with st.spinner("📥 Descargando modelos desde Google Drive..."):
             download_models()
-            # Re-verificar después de la descarga
-            modelo_det_existe = modelo_det_path.exists()
-            modelo_seg_existe = modelo_seg_path.exists()
-    
-    if modelo_det_existe and modelo_seg_existe:
-        st.success("✅ Modelos encontrados localmente")
-    elif modelo_det_existe:
-        st.success("✅ Modelo de detección encontrado")
-        st.warning("⚠️ Modelo de segmentación no disponible")
-    else:
-        st.error("❌ Error: modelos no descargados correctamente")
 except Exception as e:
     # Si falla la descarga, continuar (los modelos pueden estar localmente)
-    st.warning(f"⚠️ Error en descarga automática: {e}")
-    st.info("Intentando usar modelos locales...")
     pass
 
 # Usar rutas relativas al proyecto en lugar de config.py
@@ -500,16 +487,25 @@ def main():
     """Función principal de la aplicación."""
     
     # ========================================================================
-    # HEADER PRINCIPAL
+    # HEADER PRINCIPAL CON DISEÑO MODERNO
     # ========================================================================
-    st.title("🏗️ Sistema de Análisis de Fisuras en Estructuras")
     st.markdown(
         """
-        <div style='background-color: #f0f2f6; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;'>
-        <p style='margin: 0; color: #31333F;'>
-        🤖 <strong>Inteligencia Artificial para Inspección Estructural</strong><br>
-        Análisis automático de fisuras en concreto utilizando Deep Learning
-        </p>
+        <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                    padding: 2rem; 
+                    border-radius: 1rem; 
+                    margin-bottom: 2rem;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+            <h1 style='color: white; margin: 0; font-size: 2.5rem; font-weight: 700;'>
+                🏗️ Sistema de Análisis de Fisuras
+            </h1>
+            <p style='color: rgba(255,255,255,0.9); margin: 0.5rem 0 0 0; font-size: 1.1rem;'>
+                🤖 Inteligencia Artificial para Inspección Estructural
+            </p>
+            <div style='background: rgba(255,255,255,0.2); height: 2px; margin: 1rem 0 0.5rem 0; border-radius: 2px;'></div>
+            <p style='color: rgba(255,255,255,0.8); margin: 0; font-size: 0.95rem;'>
+                Análisis automático de fisuras en concreto utilizando Deep Learning
+            </p>
         </div>
         """,
         unsafe_allow_html=True
@@ -531,15 +527,29 @@ def main():
         modo_deteccion = True
         modo_segmentacion = False
         
-        # Descripción del modo
+        # Descripción del modo con diseño moderno
         st.markdown(
             """
-            <div style='background-color: #e8f4f8; padding: 1rem; border-left: 4px solid #1f77b4; border-radius: 0.3rem; margin-bottom: 1.5rem;'>
-            <h4 style='margin-top: 0; color: #1f77b4;'>🔍 Detección Rápida - Clasificación Binaria</h4>
-            <p style='margin-bottom: 0;'>
-            Utiliza <strong>MobileNetV2</strong> entrenado con 56,092 imágenes del dataset SDNET2018.<br>
-            <strong>Precisión:</strong> 94.36% | <strong>Recall:</strong> 99.64% | <strong>F1-Score:</strong> 96.77%
-            </p>
+            <div style='background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%); 
+                        padding: 1.5rem; 
+                        border-left: 5px solid #00acc1; 
+                        border-radius: 0.75rem; 
+                        margin-bottom: 1.5rem;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.08);'>
+                <h3 style='margin: 0 0 0.75rem 0; color: #00695c; font-weight: 600;'>
+                    🔍 Detección Rápida - Clasificación Binaria
+                </h3>
+                <p style='margin: 0 0 0.5rem 0; color: #004d40; line-height: 1.6;'>
+                    Utiliza <strong>MobileNetV2</strong> entrenado con 56,092 imágenes del dataset SDNET2018.
+                </p>
+                <div style='background: white; padding: 0.75rem; border-radius: 0.5rem; margin-top: 0.75rem;'>
+                    <span style='color: #00897b; font-weight: 600;'>📊 Métricas:</span>
+                    <span style='color: #00695c;'>
+                        Precisión <strong>94.36%</strong> | 
+                        Recall <strong>99.64%</strong> | 
+                        F1-Score <strong>96.77%</strong>
+                    </span>
+                </div>
             </div>
             """,
             unsafe_allow_html=True
@@ -672,35 +682,70 @@ def main():
         
         else:
             # Instrucciones cuando no hay imagen
-            st.markdown("### 👆 Sube una imagen para comenzar")
+            st.markdown(
+                """
+                <h3 style='color: #424242; margin-bottom: 1.5rem;'>👆 Sube una imagen para comenzar</h3>
+                """,
+                unsafe_allow_html=True
+            )
             
             col1, col2, col3 = st.columns(3)
             with col1:
                 st.markdown(
                     """
-                    **📸 Calidad**
-                    - ✓ Buena iluminación
-                    - ✓ Sin sombras fuertes
-                    - ✓ Imagen enfocada
-                    """
+                    <div style='background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); 
+                                padding: 1.25rem; 
+                                border-radius: 0.75rem; 
+                                border-left: 4px solid #f57c00;
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+                                height: 100%;'>
+                        <h4 style='margin: 0 0 0.75rem 0; color: #e65100;'>📸 Calidad</h4>
+                        <ul style='margin: 0; padding-left: 1.25rem; color: #bf360c;'>
+                            <li>✓ Buena iluminación</li>
+                            <li>✓ Sin sombras fuertes</li>
+                            <li>✓ Imagen enfocada</li>
+                        </ul>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
                 )
             with col2:
                 st.markdown(
                     """
-                    **📏 Encuadre**
-                    - ✓ Toma perpendicular
-                    - ✓ Distancia 0.5-2m
-                    - ✓ Fisura centrada
-                    """
+                    <div style='background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); 
+                                padding: 1.25rem; 
+                                border-radius: 0.75rem; 
+                                border-left: 4px solid #388e3c;
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+                                height: 100%;'>
+                        <h4 style='margin: 0 0 0.75rem 0; color: #1b5e20;'>📏 Encuadre</h4>
+                        <ul style='margin: 0; padding-left: 1.25rem; color: #2e7d32;'>
+                            <li>✓ Toma perpendicular</li>
+                            <li>✓ Distancia 0.5-2m</li>
+                            <li>✓ Fisura centrada</li>
+                        </ul>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
                 )
             with col3:
                 st.markdown(
                     """
-                    **✅ Formato**
-                    - ✓ JPG, JPEG, PNG
-                    - ✓ Mín: 224×224 px
-                    - ✓ Máx: 4096×4096 px
-                    """
+                    <div style='background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); 
+                                padding: 1.25rem; 
+                                border-radius: 0.75rem; 
+                                border-left: 4px solid #1976d2;
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+                                height: 100%;'>
+                        <h4 style='margin: 0 0 0.75rem 0; color: #0d47a1;'>✅ Formato</h4>
+                        <ul style='margin: 0; padding-left: 1.25rem; color: #1565c0;'>
+                            <li>✓ JPG, JPEG, PNG</li>
+                            <li>✓ Mín: 224×224 px</li>
+                            <li>✓ Máx: 4096×4096 px</li>
+                        </ul>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
                 )
     
     # ========================================================================
@@ -716,16 +761,34 @@ def main():
             st.info("💡 Usa la pestaña **Detección Rápida** para análisis de fisuras.")
             return
         
-        # Descripción del modo
+        # Descripción del modo con diseño moderno
         st.markdown(
             """
-            <div style='background-color: #f0e8f4; padding: 1rem; border-left: 4px solid #9b59b6; border-radius: 0.3rem; margin-bottom: 1.5rem;'>
-            <h4 style='margin-top: 0; color: #9b59b6;'>📐 Análisis Detallado - Segmentación Semántica</h4>
-            <p style='margin-bottom: 0;'>
-            Utiliza <strong>U-Net Lite</strong> entrenado con 3,368 pares del dataset CRACK500.<br>
-            <strong>IoU:</strong> 60.5% | <strong>Dice:</strong> 73.0% | <strong>Accuracy:</strong> 97.4%<br>
-            Mide: <strong>Ancho, Orientación, Profundidad Visual</strong>
-            </p>
+            <div style='background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%); 
+                        padding: 1.5rem; 
+                        border-left: 5px solid #d81b60; 
+                        border-radius: 0.75rem; 
+                        margin-bottom: 1.5rem;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.08);'>
+                <h3 style='margin: 0 0 0.75rem 0; color: #880e4f; font-weight: 600;'>
+                    📐 Análisis Detallado - Segmentación Semántica
+                </h3>
+                <p style='margin: 0 0 0.5rem 0; color: #6a1b32; line-height: 1.6;'>
+                    Utiliza <strong>U-Net Lite</strong> entrenado con 3,368 pares del dataset CRACK500.
+                </p>
+                <div style='background: white; padding: 0.75rem; border-radius: 0.5rem; margin-top: 0.75rem;'>
+                    <span style='color: #c2185b; font-weight: 600;'>📊 Métricas:</span>
+                    <span style='color: #880e4f;'>
+                        IoU <strong>60.5%</strong> | 
+                        Dice <strong>73.0%</strong> | 
+                        Accuracy <strong>97.4%</strong>
+                    </span>
+                    <br>
+                    <span style='color: #c2185b; font-weight: 600; margin-top: 0.5rem; display: inline-block;'>📏 Mediciones:</span>
+                    <span style='color: #880e4f;'>
+                        Ancho | Orientación | Profundidad Visual
+                    </span>
+                </div>
             </div>
             """,
             unsafe_allow_html=True
@@ -865,26 +928,60 @@ def main():
         
         else:
             # Instrucciones
-            st.markdown("### 👆 Sube una imagen para análisis detallado")
+            st.markdown(
+                """
+                <h3 style='color: #424242; margin-bottom: 1.5rem;'>👆 Sube una imagen para análisis detallado</h3>
+                """,
+                unsafe_allow_html=True
+            )
             
-            st.info(
+            st.markdown(
                 """
-                💡 **Consejos para Segmentación:**
-                - Captura cercana de la fisura (distancia 0.3-1m)
-                - Asegura que la fisura sea claramente visible
-                - Evita reflejos y sombras sobre la fisura
-                - Preferible fondo de concreto uniforme
-                """
+                <div style='background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%); 
+                            padding: 1.5rem; 
+                            border-left: 4px solid #3f51b5; 
+                            border-radius: 0.75rem;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.08);'>
+                    <h4 style='margin: 0 0 0.75rem 0; color: #1a237e;'>💡 Consejos para Segmentación</h4>
+                    <ul style='margin: 0; padding-left: 1.5rem; color: #283593; line-height: 1.8;'>
+                        <li>Captura cercana de la fisura (distancia 0.3-1m)</li>
+                        <li>Asegura que la fisura sea claramente visible</li>
+                        <li>Evita reflejos y sombras sobre la fisura</li>
+                        <li>Preferible fondo de concreto uniforme</li>
+                    </ul>
+                </div>
+                """,
+                unsafe_allow_html=True
             )
     
     # ========================================================================
     # TAB 3: AYUDA
     # ========================================================================
     with tab_ayuda:
-        st.markdown("### 📚 Guía de Uso")
+        st.markdown(
+            """
+            <div style='background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%); 
+                        padding: 1.5rem; 
+                        border-left: 5px solid #f9a825; 
+                        border-radius: 0.75rem;
+                        margin-bottom: 2rem;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.08);'>
+                <h2 style='margin: 0 0 0.5rem 0; color: #f57f17;'>📚 Guía de Uso</h2>
+                <p style='margin: 0; color: #f9a825;'>
+                    Todo lo que necesitas saber para aprovechar al máximo el sistema
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
         
         # Sección de FAQ
-        st.markdown("#### ❓ Preguntas Frecuentes")
+        st.markdown(
+            """
+            <h3 style='color: #424242; margin-bottom: 1rem;'>❓ Preguntas Frecuentes</h3>
+            """,
+            unsafe_allow_html=True
+        )
         
         with st.expander("¿Cuál es la diferencia entre Detección y Segmentación?"):
             st.markdown(
@@ -953,33 +1050,71 @@ def main():
                 """
             )
         
-        st.markdown("---")
-        st.markdown("#### 📊 Información Técnica")
+        st.markdown(
+            """
+            <div style='height: 2px; background: linear-gradient(90deg, transparent, #9e9e9e, transparent); margin: 2rem 0;'></div>
+            <h3 style='color: #424242; margin-bottom: 1.5rem;'>📊 Información Técnica</h3>
+            """,
+            unsafe_allow_html=True
+        )
         
         col1, col2 = st.columns(2)
         with col1:
             st.markdown(
                 """
-                **Modelo de Detección:**
-                - Arquitectura: MobileNetV2
-                - Dataset: SDNET2018 (56,092 imgs)
-                - Entrenamiento: Transfer Learning
-                - Entrada: 224×224 RGB
-                """
+                <div style='background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%); 
+                            padding: 1.5rem; 
+                            border-left: 4px solid #0288d1; 
+                            border-radius: 0.75rem;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+                            height: 100%;'>
+                    <h4 style='margin: 0 0 1rem 0; color: #01579b;'>🔍 Modelo de Detección</h4>
+                    <ul style='margin: 0; padding-left: 1.5rem; color: #0277bd; line-height: 1.8;'>
+                        <li><strong>Arquitectura:</strong> MobileNetV2</li>
+                        <li><strong>Dataset:</strong> SDNET2018 (56,092 imgs)</li>
+                        <li><strong>Entrenamiento:</strong> Transfer Learning</li>
+                        <li><strong>Entrada:</strong> 224×224 RGB</li>
+                    </ul>
+                </div>
+                """,
+                unsafe_allow_html=True
             )
         with col2:
             st.markdown(
                 """
-                **Modelo de Segmentación:**
-                - Arquitectura: U-Net Lite
-                - Dataset: CRACK500 (3,368 pares)
-                - Parámetros: 1.95M
-                - Entrada: 128×128 RGB
-                """
+                <div style='background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); 
+                            padding: 1.5rem; 
+                            border-left: 4px solid #8e24aa; 
+                            border-radius: 0.75rem;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+                            height: 100%;'>
+                    <h4 style='margin: 0 0 1rem 0; color: #4a148c;'>📐 Modelo de Segmentación</h4>
+                    <ul style='margin: 0; padding-left: 1.5rem; color: #6a1b9a; line-height: 1.8;'>
+                        <li><strong>Arquitectura:</strong> U-Net Lite</li>
+                        <li><strong>Dataset:</strong> CRACK500 (3,368 pares)</li>
+                        <li><strong>Parámetros:</strong> 1.95M</li>
+                        <li><strong>Entrada:</strong> 128×128 RGB</li>
+                    </ul>
+                </div>
+                """,
+                unsafe_allow_html=True
             )
         
-        st.markdown("---")
-        st.caption("© 2025 - Sistema de Análisis de Fisuras | Desarrollado con Streamlit + TensorFlow")
+        st.markdown(
+            """
+            <div style='height: 2px; background: linear-gradient(90deg, transparent, #9e9e9e, transparent); margin: 2rem 0;'></div>
+            <div style='background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); 
+                        padding: 1rem; 
+                        border-radius: 0.5rem; 
+                        text-align: center;
+                        margin-top: 1rem;'>
+                <p style='margin: 0; color: #616161; font-size: 0.9rem;'>
+                    © 2025 - Sistema de Análisis de Fisuras | Desarrollado con ❤️ usando Streamlit + TensorFlow
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 
 # ============================================================================
