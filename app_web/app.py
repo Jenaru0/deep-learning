@@ -18,11 +18,41 @@ import matplotlib.pyplot as plt
 import cv2
 import io
 import sys
+import os
 from pathlib import Path
+
+# ==========================================
+# CONFIGURACIÓN PARA CLOUD (sin GPU)
+# ==========================================
+if 'STREAMLIT_SHARING' in os.environ or 'DYNO' in os.environ:
+    # Forzar CPU en entornos cloud
+    os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # Configurar el path para importar módulos del proyecto
 PROYECTO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROYECTO_ROOT))
+
+# ==========================================
+# DESCARGAR MODELOS DESDE GOOGLE DRIVE (OPCIONAL)
+# ==========================================
+# Solo se ejecuta si los modelos no existen localmente
+try:
+    from app_web.download_models import download_models
+    
+    # Verificar si los modelos ya existen
+    modelo_det_existe = os.path.exists('modelos/deteccion/modelo_deteccion_final.keras')
+    modelo_seg_existe = os.path.exists('modelos/segmentacion/unet_segmentacion_final.keras')
+    
+    if not modelo_det_existe or not modelo_seg_existe:
+        with st.spinner("📥 Descargando modelos desde Google Drive..."):
+            download_models()
+    else:
+        st.success("✅ Modelos encontrados localmente")
+except Exception as e:
+    # Si falla la descarga, continuar (los modelos pueden estar localmente)
+    st.info(f"ℹ️ Usando modelos locales (sin descarga desde Drive)")
+    pass
 
 try:
     from config import (
@@ -66,7 +96,13 @@ st.set_page_config(
 # FUNCIONES DE UTILIDAD
 # ============================================================================
 
-@st.cache_resource
+def calcular_hash_imagen(imagen_array: np.ndarray) -> str:
+    """Calcula hash MD5 de imagen para usar en caché."""
+    import hashlib
+    return hashlib.md5(imagen_array.tobytes()).hexdigest()
+
+
+@st.cache_resource(show_spinner="⏳ Paso 1/2: Cargando MobileNetV2 (14MB, ~20-30s)...")
 def cargar_modelo():
     """
     Carga el modelo entrenado.
@@ -75,6 +111,11 @@ def cargar_modelo():
     Returns:
         tensorflow.keras.Model: Modelo cargado
     """
+    # Silenciar logs de TensorFlow
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+    import logging
+    logging.getLogger('tensorflow').setLevel(logging.ERROR)
+    
     modelos_dir = Path(MODELOS_DIR)
     
     # Buscar modelos en orden de prioridad
@@ -97,18 +138,29 @@ def cargar_modelo():
     
     if modelo_path is None:
         st.error("❌ No se encontró ningún modelo entrenado.")
-        st.info("Por favor, entrena un modelo primero ejecutando: `python3 scripts/entrenamiento/entrenar_deteccion.py`")
+        st.info("📁 Descarga los modelos desde [Google Drive](https://drive.google.com/drive/folders/TUS_ARCHIVOS) y colócalos en `modelos/deteccion/`")
         st.stop()
     
     try:
-        modelo = tf.keras.models.load_model(modelo_path)
+        # Cargar sin compilar (más rápido y evita warnings)
+        with tf.keras.utils.custom_object_scope({}):
+            modelo = tf.keras.models.load_model(modelo_path, compile=False)
+        
+        # Compilar manualmente para evitar warnings del optimizer
+        modelo.compile(
+            optimizer='adam',
+            loss='binary_crossentropy',
+            metrics=['accuracy'],
+            run_eagerly=False
+        )
         return modelo, modelo_path.name
     except Exception as e:
         st.error(f"❌ Error al cargar el modelo: {e}")
+        st.info(f"📁 Modelo buscado: {modelo_path}")
         st.stop()
 
 
-@st.cache_resource
+@st.cache_resource(show_spinner="⏳ Paso 2/2: Cargando U-Net (~10-15s)...")
 def cargar_modelo_segmentacion():
     """
     Carga el modelo U-Net para segmentación de fisuras.
@@ -317,6 +369,51 @@ def crear_overlay_segmentacion(imagen_original, mascara, opacidad=0.5):
     return Image.fromarray(resultado)
 
 
+@st.cache_data(show_spinner=False)
+def convertir_pil_a_bgr(imagen_hash: str, imagen_array: np.ndarray) -> np.ndarray:
+    """Convierte imagen PIL a BGR con caché.
+    
+    Args:
+        imagen_hash: Hash MD5 de la imagen (para caché)
+        imagen_array: Array RGB de la imagen
+    
+    Returns:
+        Array BGR para OpenCV
+    """
+    return cv2.cvtColor(imagen_array, cv2.COLOR_RGB2BGR)
+
+
+@st.cache_data(show_spinner="⚙️ Calculando parámetros estructurales...")
+def calcular_parametros_cacheados(mascara_bytes: bytes, imagen_hash: str, imagen_array: np.ndarray):
+    """Calcula parámetros estructurales con caché para evitar recálculos.
+    
+    Args:
+        mascara_bytes: Máscara serializada (para caché)
+        imagen_hash: Hash de la imagen original
+        imagen_array: Array RGB de la imagen
+        
+    Returns:
+        Tupla con (ancho_dict, orientacion_dict, profundidad_dict)
+    """
+    # Deserializar máscara
+    mascara = np.frombuffer(mascara_bytes, dtype=np.uint8).reshape(imagen_array.shape[:2])
+    
+    # Convertir imagen a BGR
+    img_bgr = convertir_pil_a_bgr(imagen_hash, imagen_array)
+    
+    # Calcular parámetros (operaciones costosas)
+    with st.spinner("📏 Midiendo ancho de fisura..."):
+        ancho = medir_ancho_fisura(mascara, pixeles_por_mm=1.0)
+    
+    with st.spinner("🧭 Detectando orientación..."):
+        orientacion = detectar_orientacion(mascara)
+    
+    with st.spinner("🔍 Estimando profundidad visual..."):
+        profundidad = estimar_profundidad(img_bgr, mascara)
+    
+    return ancho, orientacion, profundidad
+
+
 def mostrar_parametros_estructurales(mascara, imagen_original):
     """
     Calcula y muestra los parámetros estructurales de la fisura.
@@ -329,38 +426,46 @@ def mostrar_parametros_estructurales(mascara, imagen_original):
         dict con los parámetros calculados
     """
     try:
-        # Convertir imagen a numpy (OpenCV usa BGR)
+        # Convertir imagen a numpy para cálculos
         img_rgb = np.array(imagen_original.convert('RGB'))
-        img_bgr = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
+        img_hash = calcular_hash_imagen(img_rgb)
         
-        # Medir parámetros (orden correcto: imagen, mascara)
-        ancho = medir_ancho_fisura(mascara, pixeles_por_mm=1.0)
-        orientacion = detectar_orientacion(mascara)
-        profundidad = estimar_profundidad(img_bgr, mascara)
+        # Serializar máscara para caché (bytes son hashables)
+        mascara_bytes = mascara.tobytes()
         
-        # Mostrar parámetros en la interfaz
-        with st.expander("📏 Ancho de Fisura", expanded=True):
-            col1, col2, col3 = st.columns(3)
-            col1.metric("Ancho Promedio", f"{ancho.get('ancho_promedio_mm', 0):.2f} mm")
-            col2.metric("Ancho Máximo", f"{ancho.get('ancho_maximo_mm', 0):.2f} mm")
-            col3.metric("Área Total", f"{ancho.get('area_total_mm2', 0):.2f} mm²")
+        # Calcular parámetros con caché
+        ancho, orientacion, profundidad = calcular_parametros_cacheados(
+            mascara_bytes, 
+            img_hash, 
+            img_rgb
+        )
         
-        with st.expander("🧭 Orientación", expanded=True):
-            col1, col2 = st.columns(2)
-            col1.metric("Orientación", orientacion.get('orientacion', 'N/A'))
-            col2.metric("Ángulo", f"{orientacion.get('angulo_grados', 0):.1f}°")
-            st.progress(orientacion.get('confianza', 0.0))
-            st.caption(f"Confianza: {orientacion.get('confianza', 0)*100:.1f}%")
+        # Mostrar parámetros SIEMPRE EXPANDIDOS
+        st.markdown("### 📏 Ancho de Fisura")
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Ancho Promedio", f"{ancho.get('ancho_promedio_mm', 0):.2f} mm", help="Media del ancho en píxeles")
+        col2.metric("Ancho Máximo", f"{ancho.get('ancho_maximo_mm', 0):.2f} mm", help="Apertura máxima detectada")
+        col3.metric("Área Total", f"{ancho.get('area_total_mm2', 0):.2f} mm²", help="Superficie afectada")
         
-        with st.expander("🔍 Profundidad Visual", expanded=True):
-            categoria = profundidad.get('profundidad_categoria', 'Desconocida')
-            intensidad = profundidad.get('intensidad_promedio', 0)
-            
-            col1, col2 = st.columns(2)
-            col1.metric("Categoría", categoria)
-            col2.metric("Intensidad Media", f"{intensidad:.1f}")
-            
-            st.info(profundidad.get('advertencia', 'Estimación basada en análisis visual'))
+        st.markdown("---")
+        st.markdown("### 🧭 Orientación")
+        col1, col2 = st.columns(2)
+        col1.metric("Orientación", orientacion.get('orientacion', 'N/A'))
+        col2.metric("Ángulo", f"{orientacion.get('angulo_grados', 0):.1f}°")
+        
+        confianza = orientacion.get('confianza', 0.0)
+        st.progress(confianza, text=f"Confianza: {confianza*100:.1f}%")
+        
+        st.markdown("---")
+        st.markdown("### 🔍 Profundidad Visual")
+        categoria = profundidad.get('profundidad_categoria', 'Desconocida')
+        intensidad = profundidad.get('intensidad_promedio', 0)
+        
+        col1, col2 = st.columns(2)
+        col1.metric("Categoría", categoria)
+        col2.metric("Intensidad Media", f"{intensidad:.1f}")
+        
+        st.info(profundidad.get('advertencia', 'Estimación basada en análisis visual'))
         
         return {
             'ancho_promedio_mm': ancho.get('ancho_promedio_mm', 0),
@@ -647,7 +752,19 @@ def main():
             
             with col_der:
                 st.subheader("📏 Parámetros Estructurales")
-                parametros = mostrar_parametros_estructurales(mascara, imagen_original)
+                
+                # Lazy loading: solo calcular parámetros si usuario lo solicita
+                calcular_params = st.checkbox(
+                    "🔬 Calcular Mediciones Detalladas",
+                    value=True,
+                    help="Desactiva para vista rápida. Activa para medir ancho, orientación y profundidad (10-20s en primera ejecución, luego instantáneo por caché)"
+                )
+                
+                parametros = None
+                if calcular_params:
+                    parametros = mostrar_parametros_estructurales(mascara, imagen_original)
+                else:
+                    st.info("ℹ️ Marca la casilla para calcular parámetros estructurales detallados")
             
             # Detalles técnicos de la segmentación
             st.markdown("---")

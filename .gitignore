@@ -1,4 +1,6 @@
-# Archivos de Python
+# ==========================================
+# PYTHON
+# ==========================================
 __pycache__/
 *.py[cod]
 *$py.class
@@ -11,42 +13,37 @@ build/
 dist/
 *.egg-info/
 
-# Jupyter Notebook
+# ==========================================
+# JUPYTER NOTEBOOK
+# ==========================================
 .ipynb_checkpoints
 *.ipynb
 
-# Datasets originales (NO SUBIR - Son muy pesados)
-datasets/SDNET2018/
-datasets/SDNET2018.zip
-datasets/CRACK500.zip
-datasets/CRACK500/images/
-datasets/CRACK500/masks/
+# ==========================================
+# DATASETS (NO SUBIR - 7.46 GB TOTAL)
+# ==========================================
+datasets/
 
-# Metadata pesados (algunos archivos mask.txt son > 15MB)
-datasets/CRACK500/metadata/*_mask.txt
-
-# Mantener solo archivos de split y summary
-!datasets/CRACK500/metadata/train.txt
-!datasets/CRACK500/metadata/val.txt
-!datasets/CRACK500/metadata/test.txt
-!datasets/CRACK500/dataset_summary.json
-
-# Datos procesados (NO SUBIR - Se generan con scripts)
+# ==========================================
+# DATOS PROCESADOS (NO SUBIR - 0.70 GB)
+# ==========================================
 datos/procesados/
+datos/crudo/
 
-# Modelos entrenados (NO SUBIR - Son archivos grandes)
+# ==========================================
+# MODELOS (SE DESCARGAN DE GOOGLE DRIVE)
+# ==========================================
 modelos/**/*.h5
 modelos/**/*.keras
 modelos/**/*.pb
 modelos/**/*.weights
-
-# EXCEPCIONES: Permitir modelo final de segmentación
-!modelos/segmentacion/unet_segmentacion_final.keras
-!modelos/segmentacion/*.json
-
-# Excluir checkpoints intermedios y backups
-modelos/segmentacion/best_unet_*.keras
+modelos/deteccion/logs/
+modelos/segmentacion/logs/
+modelos/deteccion/backup_old/
 modelos/segmentacion/backup_old/
+
+# Permitir archivos JSON de métricas
+!modelos/**/*.json
 
 # Resultados (imágenes generadas - pueden regenerarse con scripts)
 resultados/visualizaciones/
