@@ -40,31 +40,38 @@ sys.path.insert(0, str(PROYECTO_ROOT))
 try:
     from app_web.download_models import download_models
     
-    # Verificar si los modelos ya existen
-    modelo_det_existe = os.path.exists('modelos/deteccion/modelo_deteccion_final.keras')
-    modelo_seg_existe = os.path.exists('modelos/segmentacion/unet_segmentacion_final.keras')
+    # Usar rutas absolutas relativas al proyecto
+    modelo_det_path = PROYECTO_ROOT / 'modelos' / 'deteccion' / 'modelo_deteccion_final.keras'
+    modelo_seg_path = PROYECTO_ROOT / 'modelos' / 'segmentacion' / 'unet_segmentacion_final.keras'
+    
+    modelo_det_existe = modelo_det_path.exists()
+    modelo_seg_existe = modelo_seg_path.exists()
     
     if not modelo_det_existe or not modelo_seg_existe:
         with st.spinner("📥 Descargando modelos desde Google Drive..."):
             download_models()
-    else:
+            # Re-verificar después de la descarga
+            modelo_det_existe = modelo_det_path.exists()
+            modelo_seg_existe = modelo_seg_path.exists()
+    
+    if modelo_det_existe and modelo_seg_existe:
         st.success("✅ Modelos encontrados localmente")
+    elif modelo_det_existe:
+        st.success("✅ Modelo de detección encontrado")
+        st.warning("⚠️ Modelo de segmentación no disponible")
+    else:
+        st.error("❌ Error: modelos no descargados correctamente")
 except Exception as e:
     # Si falla la descarga, continuar (los modelos pueden estar localmente)
-    st.info(f"ℹ️ Usando modelos locales (sin descarga desde Drive)")
+    st.warning(f"⚠️ Error en descarga automática: {e}")
+    st.info("Intentando usar modelos locales...")
     pass
 
-try:
-    from config import (
-        RUTA_MODELO_DETECCION as MODELOS_DIR, 
-        RUTA_MODELO_SEGMENTACION,
-        IMG_SIZE
-    )
-except ImportError:
-    # Fallback si config.py no existe o está mal configurado
-    MODELOS_DIR = str(PROYECTO_ROOT / "modelos" / "deteccion")
-    RUTA_MODELO_SEGMENTACION = str(PROYECTO_ROOT / "modelos" / "segmentacion" / "unet_segmentacion_final.keras")
-    IMG_SIZE = 224
+# Usar rutas relativas al proyecto en lugar de config.py
+# Esto funciona tanto en local como en Streamlit Cloud
+MODELOS_DIR = PROYECTO_ROOT / "modelos" / "deteccion"
+RUTA_MODELO_SEGMENTACION = PROYECTO_ROOT / "modelos" / "segmentacion" / "unet_segmentacion_final.keras"
+IMG_SIZE = 224
 
 # Importar módulos de análisis de parámetros
 try:
@@ -116,7 +123,8 @@ def cargar_modelo():
     import logging
     logging.getLogger('tensorflow').setLevel(logging.ERROR)
     
-    modelos_dir = Path(MODELOS_DIR)
+    # MODELOS_DIR ya es un Path object
+    modelos_dir = MODELOS_DIR if isinstance(MODELOS_DIR, Path) else Path(MODELOS_DIR)
     
     # Buscar modelos en orden de prioridad
     patrones = [
@@ -138,7 +146,9 @@ def cargar_modelo():
     
     if modelo_path is None:
         st.error("❌ No se encontró ningún modelo entrenado.")
-        st.info("📁 Descarga los modelos desde [Google Drive](https://drive.google.com/drive/folders/TUS_ARCHIVOS) y colócalos en `modelos/deteccion/`")
+        st.info(f"📁 Buscando en: {modelos_dir}")
+        st.info(f"📂 Archivos disponibles: {list(modelos_dir.glob('*')) if modelos_dir.exists() else 'Directorio no existe'}")
+        st.info("💡 El modelo debería descargarse automáticamente. Recarga la página si acabas de iniciar la app.")
         st.stop()
     
     try:
