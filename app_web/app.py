@@ -712,8 +712,6 @@ def main():
         
         # Verificar disponibilidad
         if not SEGMENTACION_DISPONIBLE:
-        # Verificar disponibilidad
-        if not SEGMENTACION_DISPONIBLE:
             st.error("❌ **Módulo de segmentación no disponible**")
             st.info("💡 Usa la pestaña **Detección Rápida** para análisis de fisuras.")
             return
