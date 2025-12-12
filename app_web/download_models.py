@@ -10,12 +10,12 @@ import streamlit as st
 # IDs de los archivos en Google Drive
 MODELS = {
     'deteccion': {
-        'url': 'https://drive.google.com/uc?id=1toZrp6q8-qCrRk7DUkz12wH9DAMVv0_V',
-        'output': 'modelos/deteccion/modelo_deteccion_final.keras'
+        'url': 'https://drive.google.com/uc?id=1Ug_h1flAfLNHLMyNTP2yb_4wdqE5HxIt',
+        'output': BASE_DIR / 'modelos' / 'deteccion' / 'modelo_deteccion_final.keras'
     },
     'segmentacion': {
-        'url': 'https://drive.google.com/uc?id=1Ug_h1flAfLNHLMyNTP2yb_4wdqE5HxIt',
-        'output': 'modelos/segmentacion/unet_segmentacion_final.keras'
+        'url': 'https://drive.google.com/uc?id=1toZrp6q8-qCrRk7DUkz12wH9DAMVv0_V',
+        'output': BASE_DIR / 'modelos' / 'segmentacion' / 'unet_segmentacion_final.keras'
     }
 }
 
