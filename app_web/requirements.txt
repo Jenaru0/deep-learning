@@ -1,13 +1,14 @@
 # ==========================================
 # REQUIREMENTS PARA STREAMLIT CLOUD
 # ==========================================
-# Compatible con Python 3.10-3.11
+# Compatible con Python 3.13 (versión actual de Streamlit Cloud)
 
 # Framework principal
 streamlit==1.32.0
 
-# TensorFlow (CPU-only, compatible con Python 3.10-3.11)
-tensorflow-cpu==2.15.0
+# TensorFlow (última versión compatible con Python 3.13)
+# Nota: Python 3.13 solo soporta TensorFlow 2.20+
+tensorflow==2.20.0
 
 # Procesamiento de imágenes
 opencv-python-headless==4.9.0.80
@@ -15,7 +16,8 @@ scikit-image==0.22.0
 pillow==10.2.0
 
 # Computación científica
-numpy==1.26.4
+# TensorFlow 2.20 requiere numpy>=1.26.0,<2.0.0
+numpy>=1.26.0,<2.0.0
 pandas==2.2.0
 scipy==1.12.0
 

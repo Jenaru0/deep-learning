@@ -69,6 +69,7 @@ Verás logs en tiempo real:
 Una vez funcionando, comparte la URL:
 
 **Para tu tesis**:
+
 ```
 Sistema desplegado en: https://deteccion-fisuras.streamlit.app
 Repositorio GitHub: https://github.com/Jenaru0/deep-learning
@@ -83,6 +84,7 @@ Repositorio GitHub: https://github.com/Jenaru0/deep-learning
 **Causa**: `requirements_streamlit.txt` no se encontró o tiene error
 
 **Solución**:
+
 ```powershell
 # Verificar que existe
 ls requirements_streamlit.txt
@@ -96,6 +98,7 @@ cat requirements_streamlit.txt | grep opencv
 **Causa**: Descarga de Google Drive falló
 
 **Solución**:
+
 1. Verifica que los archivos en Google Drive son públicos
 2. Verifica IDs en `app_web/download_models.py`:
    - Detection: `1toZrp6q8-qCrRk7DUkz12wH9DAMVv0_V`
@@ -106,6 +109,7 @@ cat requirements_streamlit.txt | grep opencv
 **Causa**: Streamlit Cloud usa CPU (sin GPU)
 
 **Esperado**:
+
 - Primera carga modelos: 30-50s ✅
 - Inferencia: 3-5s (vs 1-2s local con GPU) ✅
 - Parámetros (primera vez): 15-25s ✅
@@ -118,6 +122,7 @@ cat requirements_streamlit.txt | grep opencv
 **Causa**: App usa >1GB RAM (límite del plan gratuito)
 
 **Solución**:
+
 - Ya optimizado: `batch_size=1` en inferencia
 - Si persiste: Considerar plan de pago Streamlit Cloud
 
@@ -128,11 +133,13 @@ cat requirements_streamlit.txt | grep opencv
 ### Test básico (3 minutos):
 
 1. **Detección**:
+
    - Sube imagen con fisura
    - Debe mostrar: 🔴 FISURA DETECTADA
    - Confianza > 90%
 
 2. **Segmentación**:
+
    - Sube imagen con fisura
    - Debe mostrar: Máscara roja sobre fisuras
    - Checkbox visible
@@ -156,7 +163,7 @@ Usa `docs/CHECKLIST_VALIDACION_OPTIMIZACIONES.md` para testing exhaustivo
 ```markdown
 ### 5.5 Deployment y Acceso Público
 
-El sistema fue desplegado en Streamlit Cloud para permitir acceso 
+El sistema fue desplegado en Streamlit Cloud para permitir acceso
 público y demostración en vivo. La arquitectura de deployment incluye:
 
 - **Código fuente**: GitHub (https://github.com/Jenaru0/deep-learning)
@@ -165,12 +172,14 @@ público y demostración en vivo. La arquitectura de deployment incluye:
 - **URL pública**: https://deteccion-fisuras.streamlit.app
 
 **Características del deployment**:
+
 - ✅ Descarga automática de modelos desde Google Drive (22MB)
 - ✅ Caché de modelos post-descarga (sin re-descarga)
 - ✅ Optimizaciones de rendimiento (caché de parámetros)
 - ✅ Interfaz responsiva web (acceso desde cualquier dispositivo)
 
 **Tiempos de respuesta en producción** (CPU, sin GPU):
+
 - Carga inicial de modelos: 30-50 segundos (solo primera vez)
 - Clasificación binaria: 3-5 segundos
 - Segmentación de fisuras: 3-5 segundos

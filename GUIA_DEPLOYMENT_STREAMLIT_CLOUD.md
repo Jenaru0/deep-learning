@@ -19,8 +19,9 @@ Antes de empezar, verifica que tienes:
 ## 🎯 ESTRATEGIA DE DEPLOYMENT
 
 ### Arquitectura:
+
 ```
-GitHub (código) 
+GitHub (código)
     ↓
 Streamlit Cloud (hosting)
     ↓ (descarga automática en primera ejecución)
@@ -28,6 +29,7 @@ Google Drive (modelos: 22MB total)
 ```
 
 ### Por qué esta estrategia:
+
 - ✅ **GitHub**: Gratuito, versionado, integración directa con Streamlit
 - ✅ **Streamlit Cloud**: 1GB RAM gratis, ideal para modelos pequeños
 - ✅ **Google Drive**: Modelos grandes (no van a GitHub por .gitignore)
@@ -52,6 +54,7 @@ git branch -M main
 ### 1.2 Verificar .gitignore
 
 El archivo `.gitignore` ya está configurado para **EXCLUIR**:
+
 - ❌ `datasets/` (7.46 GB - muy grande)
 - ❌ `venv/` (5.38 GB - no necesario en cloud)
 - ❌ `datos/procesados/` (datos intermedios)
@@ -59,6 +62,7 @@ El archivo `.gitignore` ya está configurado para **EXCLUIR**:
 - ❌ `*.pyc`, `*.pyo` (bytecode)
 
 Y **SÍ incluir**:
+
 - ✅ `app_web/` (código de la aplicación)
 - ✅ `scripts/` (módulos de análisis)
 - ✅ `config.py` (configuración)
@@ -89,7 +93,7 @@ git status
 1. Ve a: https://github.com/new
 2. **Repository name**: `deteccion-fisuras-deep-learning`
 3. **Description**: `Sistema de detección y segmentación de fisuras en estructuras de concreto usando MobileNetV2 y U-Net`
-4. **Visibility**: 
+4. **Visibility**:
    - ✅ **Public** (recomendado para Streamlit Cloud gratis)
    - ⚠️ Private (requiere plan Streamlit Cloud de pago)
 5. **NO marcar**: "Initialize with README" (ya lo tienes localmente)
@@ -144,8 +148,8 @@ git push -u origin main
    - **Branch**: `main`
    - **Main file path**: `app_web/app.py`
    - **App URL**: `deteccion-fisuras` (o el que prefieras)
-   
 3. **Advanced settings** (opcional):
+
    - **Python version**: 3.10 (o 3.11)
    - **Secrets**: Vacío por ahora (no necesitamos)
 
@@ -186,10 +190,12 @@ Durante el deployment, verás logs en tiempo real:
 ### 4.2 Primera carga (usuario final)
 
 **Primera vez** (sin caché):
+
 - Carga de modelos: 30-50s (normal, solo primera vez)
 - TensorFlow en CPU: Más lento que local (sin GPU)
 
 **Siguientes veces** (con caché):
+
 - Modelos ya descargados: Instantáneo
 - Inferencia: 3-5s (CPU es más lento que GPU local)
 
@@ -210,7 +216,8 @@ Durante el deployment, verás logs en tiempo real:
 
 ### Problema 1: Error al descargar modelos de Google Drive
 
-**Síntoma**: 
+**Síntoma**:
+
 ```
 FileNotFoundError: [Errno 2] No such file or directory: 'modelos/deteccion/modelo_deteccion_final.keras'
 ```
@@ -218,6 +225,7 @@ FileNotFoundError: [Errno 2] No such file or directory: 'modelos/deteccion/model
 **Causa**: Enlaces de Google Drive incorrectos o archivos no públicos
 
 **Solución**:
+
 ```powershell
 # Verificar que los archivos están públicos en Google Drive
 # Compartir → Cualquier persona con el enlace → Visualizador
@@ -232,7 +240,8 @@ FileNotFoundError: [Errno 2] No such file or directory: 'modelos/deteccion/model
 
 ### Problema 2: Out of Memory (OOM)
 
-**Síntoma**: 
+**Síntoma**:
+
 ```
 MemoryError: Unable to allocate array
 ```
@@ -240,6 +249,7 @@ MemoryError: Unable to allocate array
 **Causa**: Streamlit Cloud gratis tiene 1GB RAM, modelos grandes pueden exceder
 
 **Solución** (si ocurre):
+
 1. Reducir batch_size en inferencia (ya configurado en 1)
 2. Procesar imágenes en resolución menor
 3. Considerar plan Streamlit Cloud de pago (más RAM)
@@ -250,7 +260,8 @@ MemoryError: Unable to allocate array
 
 **Causa**: TensorFlow es pesado (~500MB)
 
-**Solución**: 
+**Solución**:
+
 - ✅ Ya configurado: `tensorflow==2.10.0` (versión ligera)
 - ⏳ Esperar pacientemente (solo primera vez)
 
@@ -261,6 +272,7 @@ MemoryError: Unable to allocate array
 **Causa**: Error en código que genera excepción
 
 **Solución**:
+
 ```powershell
 # Ver logs en Streamlit Cloud (esquina inferior derecha)
 # Buscar traceback de Python
@@ -299,12 +311,14 @@ git push
 Ver en: https://share.streamlit.io/
 
 **Métricas disponibles**:
+
 - 📈 **Viewers**: Número de usuarios activos
 - ⏱️ **Uptime**: Tiempo que la app ha estado activa
 - 💾 **Resource usage**: CPU, RAM, almacenamiento
 - 🔄 **Deployments**: Historial de deployments
 
 ### Límites del plan gratuito:
+
 - **RAM**: 1 GB
 - **CPU**: Compartido
 - **Storage**: 1 GB
@@ -341,6 +355,7 @@ Si necesitas API keys o passwords:
 
 1. Streamlit Cloud → App settings → Secrets
 2. Agregar en formato TOML:
+
 ```toml
 # .streamlit/secrets.toml (solo en cloud, NO subir a GitHub)
 [google_drive]
@@ -348,6 +363,7 @@ api_key = "tu_api_key_aqui"
 ```
 
 3. Acceder en código:
+
 ```python
 import streamlit as st
 api_key = st.secrets["google_drive"]["api_key"]
@@ -381,6 +397,7 @@ https://deteccion-fisuras.streamlit.app
 ```
 
 **Usos**:
+
 - 📄 Incluir en tesis/paper
 - 🎓 Presentación de proyecto
 - 👥 Compartir con profesores/evaluadores
@@ -391,11 +408,13 @@ https://deteccion-fisuras.streamlit.app
 ## 📞 SOPORTE
 
 ### Documentación oficial:
+
 - Streamlit: https://docs.streamlit.io/streamlit-cloud
 - GitHub: https://docs.github.com/
 - TensorFlow: https://www.tensorflow.org/
 
 ### Comunidad:
+
 - Streamlit Forum: https://discuss.streamlit.io/
 - Stack Overflow: Tag `streamlit`
 
