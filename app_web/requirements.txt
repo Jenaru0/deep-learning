@@ -4,7 +4,8 @@
 # Compatible con Python 3.13 (versión actual de Streamlit Cloud)
 
 # Framework principal
-streamlit==1.32.0
+# Streamlit 1.39+ es compatible con protobuf 5.x (requerido por TensorFlow 2.20)
+streamlit>=1.39.0
 
 # TensorFlow (última versión compatible con Python 3.13)
 # Nota: Python 3.13 solo soporta TensorFlow 2.20+
