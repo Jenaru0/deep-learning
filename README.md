@@ -1,6 +1,14 @@
 # 🏗️ Investigación: Detección de Fisuras en Edificaciones con Deep Learning
 
-## � NUEVA VERSIÓN: Entrenamiento Ultra-Rápido con RTX 2050
+> **Versión Actual:** `v1.0-production` 🟢 ESTABLE  
+> **Última Actualización:** 12 Diciembre 2025  
+> **Estado:** ✅ En producción con UI moderna
+
+📦 **[Ver todas las versiones](VERSIONES.md)** | 🔄 **[Guía de restauración](RESTAURACION.md)**
+
+---
+
+## ⚡ NUEVA VERSIÓN: Entrenamiento Ultra-Rápido con RTX 2050
 
 **Tu proyecto está 100% optimizado para entrenar 2.5-3.0x más rápido!** ⚡
 
