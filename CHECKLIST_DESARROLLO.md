@@ -1,44 +1,44 @@
 # ✅ Checklist de Desarrollo de Versiones
 
-## Estado Actual: v1.0-production ✅ COMPLETADO
+## Estado Actual: v1.1-ensemble 🔄 EN TESTING
 
 ---
 
-## 🎯 v1.1-ensemble (Próxima - 30 minutos)
+## 🎯 v1.1-ensemble (30 minutos) - IMPLEMENTADO ✅
 
 ### Pre-requisitos
 
 - [x] Backup de v1.0 creado
 - [x] Documentación actualizada
-- [ ] Crear rama `feature/ensemble-detection`
-- [ ] Confirmar que ambos modelos están disponibles localmente
+- [x] Crear rama `feature/ensemble-detection`
+- [x] Confirmar que ambos modelos están disponibles localmente
 
-### Implementación (30 min estimado)
+### Implementación (30 min estimado) ✅ COMPLETADO
 
-#### 1. Crear estructura de código (10 min)
+#### 1. Crear estructura de código (10 min) ✅
 
-- [ ] Mover `st.file_uploader` fuera de tabs
-- [ ] Implementar `st.session_state` para imagen compartida
-- [ ] Crear función `detectar_ensemble(imagen, modelo_det, modelo_seg)`
-- [ ] Actualizar lógica de tabs para usar session_state
+- [x] Mover `st.file_uploader` fuera de tabs
+- [x] Implementar `st.session_state` para imagen compartida
+- [x] Crear función `detectar_ensemble(imagen, modelo_det, modelo_seg)`
+- [x] Actualizar lógica de tabs para usar session_state
 
-#### 2. Función de Ensemble (5 min)
+#### 2. Función de Ensemble (5 min) ✅
 
 ```python
-- [ ] Implementar predicción con MobileNetV2
-- [ ] Implementar predicción con U-Net
-- [ ] Lógica OR: Si CUALQUIERA detecta → CON FISURA
-- [ ] Retornar ambas predicciones para debug
+- [x] Implementar predicción con MobileNetV2
+- [x] Implementar predicción con U-Net
+- [x] Lógica OR: Si CUALQUIERA detecta → CON FISURA
+- [x] Retornar ambas predicciones para debug
 ```
 
-#### 3. UI/UX Updates (10 min)
+#### 3. UI/UX Updates (10 min) ✅
 
-- [ ] Agregar uploader global antes de tabs
-- [ ] Mostrar warning si no hay imagen subida
-- [ ] Agregar indicador de qué modelo detectó la fisura
-- [ ] Actualizar descripciones de tabs
+- [x] Agregar uploader global antes de tabs
+- [x] Mostrar warning si no hay imagen subida
+- [x] Agregar indicador de qué modelo detectó la fisura
+- [x] Actualizar descripciones de tabs
 
-#### 4. Testing (5 min)
+#### 4. Testing (5 min) 🔄 EN PROGRESO
 
 - [ ] Probar con imagen SDNET2018
 - [ ] Probar con imagen CRACK500
@@ -47,16 +47,16 @@
 
 ### Post-implementación
 
-- [ ] Commit con mensaje descriptivo
-- [ ] Crear tag `v1.1-ensemble`
-- [ ] Crear rama backup `backup/v1.1-ensemble`
+- [x] Commit con mensaje descriptivo (4ef13a1)
+- [x] Crear tag `v1.1-ensemble`
+- [x] Crear rama backup `backup/v1.1-ensemble`
 - [ ] Push a GitHub
-- [ ] Actualizar VERSIONES.md con resultados
+- [ ] Actualizar VERSIONES.md con resultados de testing
 - [ ] Testing en Streamlit Cloud
 
 ### Criterios de Aceptación
 
-- [ ] Una imagen puede analizar ambos modelos
+- [x] Una imagen puede analizar ambos modelos
 - [ ] No más falsos negativos con CRACK500
 - [ ] Performance aceptable (<5s para ambos modelos)
 - [ ] UI clara sobre qué modelo detectó
