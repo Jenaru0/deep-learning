@@ -6,6 +6,10 @@ Se ejecuta al iniciar la app en Streamlit Cloud
 import os
 import gdown
 import streamlit as st
+from pathlib import Path
+
+# Detectar directorio base del proyecto
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # IDs de los archivos en Google Drive
 MODELS = {
@@ -26,17 +30,17 @@ def download_models():
         output_path = model_info['output']
         
         # Verificar si ya existe
-        if os.path.exists(output_path):
+        if output_path.exists():
             st.info(f"✅ Modelo {model_name} ya existe localmente")
             continue
         
         # Crear directorio si no existe
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         
         # Descargar desde Google Drive
         st.info(f"📥 Descargando modelo {model_name}...")
         try:
-            gdown.download(model_info['url'], output_path, quiet=False)
+            gdown.download(model_info['url'], str(output_path), quiet=False)
             st.success(f"✅ Modelo {model_name} descargado exitosamente")
         except Exception as e:
             st.error(f"❌ Error descargando {model_name}: {str(e)}")
