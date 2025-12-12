@@ -6,7 +6,7 @@
 # Framework principal
 streamlit==1.32.0
 
-# TensorFlow (CPU-only para ahorrar recursos)
+# TensorFlow (CPU-only, compatible Python 3.10-3.11)
 tensorflow-cpu==2.15.0
 
 # Procesamiento de imágenes
